@@ -81,15 +81,11 @@ class ResnetGenerator(chainer.Chain):
             self.l18 = ResnetBlock()
             self.l19 = L.Deconvolution2D(256, 128, ksize=3, stride=2, pad=1,
                                          initialW=initialW)
-            self.l19a = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 0), (1, 0)],
-                                        mode='constant')
             self.l20 = InstanceNormalization(128, decay=0.9, eps=1e-05,
                                              use_gamma=False, use_beta=False)
             self.l21 = lambda x: F.relu(x)
             self.l22 = L.Deconvolution2D(128, 64, ksize=3, stride=2, pad=1,
                                          initialW=initialW)
-            self.l22a = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 0), (1, 0)],
-                                        mode='constant')
             self.l23 = InstanceNormalization(64, decay=0.9, eps=1e-05,
                                              use_gamma=False, use_beta=False)
             self.l24 = lambda x: F.relu(x)
@@ -102,10 +98,6 @@ class ResnetGenerator(chainer.Chain):
         self.functions = []
         for i in range(0, 28):
             self.functions.append(getattr(self, 'l{:d}'.format(i)))
-            try:
-                self.functions.append(getattr(self, 'l{:d}a'.format(i)))
-            except AttributeError:
-                continue
 
     def __call__(self, x):
         h = x
@@ -113,6 +105,14 @@ class ResnetGenerator(chainer.Chain):
             if isinstance(func, InstanceNormalization):
                 with chainer.using_config('train', True):
                     h = func(h)
+            elif isinstance(func, L.Deconvolution2D):
+                # 1 padding to the output
+                outsize_h = chainer.utils.conv.get_deconv_outsize(
+                    size=h.shape[2], k=func.ksize, s=func.stride[0], p=func.pad[0])
+                outsize_w = chainer.utils.conv.get_deconv_outsize(
+                    size=h.shape[3], k=func.ksize, s=func.stride[1], p=func.pad[1])
+                func.outsize = (outsize_h + 1, outsize_w + 1)
+                h = func(h)
             else:
                 h = func(h)
         return h
