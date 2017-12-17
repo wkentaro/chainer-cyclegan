@@ -7,3 +7,8 @@ Chainer implementation of [pytorch-CycleGAN-and-pix2pix](https://github.com/juny
 ```bash
 make install
 ```
+
+## TODO
+
+- [ ] Write updater.
+- [ ] Write `train.py`.
