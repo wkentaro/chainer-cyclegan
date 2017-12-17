@@ -23,6 +23,7 @@ fi
 set +x && source $ROOT/.anaconda2/bin/activate && set -x
 conda info -e
 
-conda install pytorch cuda80 -c soumith -y
-conda install opencv -c menpo -y
-pip install chainer
+python -c 'import torch' &>/dev/null || conda install pytorch cuda80 -c soumith -y
+python -c 'import cv2' &>/dev/null || conda install opencv -c menpo -y
+python -c 'import chainer' &>/dev/null || pip install chainer
+python -c 'import skimage' &>/dev/null || pip install scikit-image
