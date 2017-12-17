@@ -9,10 +9,10 @@ set -e
 mkdir -p $ROOT/src
 cd $ROOT/src
 if [ ! -e chainer-cyclegan ]; then
-  git clone https://github.com/Aixile/chainer-cyclegan.git chainer-cyclegan
+  git clone https://github.com/Aixile/chainer-cyclegan.git chainer-cyclegan -b 11454ae00fd6cde972d64673086ca3cded98f504
 fi
 if [ ! -e pytorch-cyclegan ]; then
-  git clone https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix.git pytorch-cyclegan
+  git clone https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix.git pytorch-cyclegan -b 929454c133fb19c03264b00179dae25f458efd36
 fi
 cd -
 
@@ -24,5 +24,5 @@ set +x && source $ROOT/.anaconda2/bin/activate && set -x
 conda info -e
 
 conda install pytorch cuda80 -c soumith -y
-conda install opencv -c conda-forge -y
+conda install opencv -c menpo -y
 pip install chainer
