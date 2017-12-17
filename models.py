@@ -32,8 +32,12 @@ class ResnetBlock(chainer.Chain):
 
     def __call__(self, x):
         h = x
-        for func in self.functions:
-            h = func(x)
+        for i, func in enumerate(self.functions):
+            if isinstance(func, InstanceNormalization):
+                with chainer.using_config('train', True):
+                    h = func(h)
+            else:
+                h = func(h)
         h = x + h
         return h
 
@@ -77,14 +81,14 @@ class ResnetGenerator(chainer.Chain):
             self.l18 = ResnetBlock()
             self.l19 = L.Deconvolution2D(256, 128, ksize=3, stride=2, pad=1,
                                          initialW=initialW)
-            self.l19a = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 1), (1, 1)],
+            self.l19a = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 0), (1, 0)],
                                         mode='constant')
             self.l20 = InstanceNormalization(128, decay=0.9, eps=1e-05,
                                              use_gamma=False, use_beta=False)
             self.l21 = lambda x: F.relu(x)
             self.l22 = L.Deconvolution2D(128, 64, ksize=3, stride=2, pad=1,
                                          initialW=initialW)
-            self.l22a = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 1), (1, 1)],
+            self.l22a = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 0), (1, 0)],
                                         mode='constant')
             self.l23 = InstanceNormalization(64, decay=0.9, eps=1e-05,
                                              use_gamma=False, use_beta=False)
@@ -98,11 +102,19 @@ class ResnetGenerator(chainer.Chain):
         self.functions = []
         for i in range(0, 28):
             self.functions.append(getattr(self, 'l{:d}'.format(i)))
+            try:
+                self.functions.append(getattr(self, 'l{:d}a'.format(i)))
+            except AttributeError:
+                continue
 
     def __call__(self, x):
         h = x
         for i, func in enumerate(self.functions):
-            h = func(h)
+            if isinstance(func, InstanceNormalization):
+                with chainer.using_config('train', True):
+                    h = func(h)
+            else:
+                h = func(h)
         return h
 
 
@@ -139,7 +151,7 @@ class NLayerDiscriminator(chainer.Chain):
             functions += [
                 L.Convolution2D(ndf * nf_mult_prev, ndf * nf_mult,
                                 ksize=4, stride=1, pad=1),
-                InstanceNormalization(ndf * nf_mult,
+                InstanceNormalization(ndf * nf_mult, decay=0.9, eps=1e-5,
                                       use_gamma=False, use_beta=False),
                 lambda x: F.leaky_relu(x, 0.2),
             ]
