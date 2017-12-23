@@ -28,4 +28,10 @@ python -c 'import cv2' &>/dev/null || conda install opencv -c menpo -y
 python -c 'import chainer' &>/dev/null || pip install chainer
 python -c 'import skimage' &>/dev/null || pip install scikit-image
 
+# dev
+python -c 'import IPython' &>/dev/null || pip install ipython
+python -c 'import pipdeptree' &>/dev/null || pip install pipdeptree
+python -c 'import pandas' &>/dev/null || pip install pandas
+python -c 'import seaborn' &>/dev/null || pip install seaborn
+
 $ROOT/download_horse2zebra.sh
