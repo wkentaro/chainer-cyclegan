@@ -32,9 +32,11 @@ ax = plt.subplot(235)
 df.plot(x='iteration', y=['loss_D_A', 'loss_D_B'], ax=ax)
 plt.legend()
 
-img_file = sorted(glob.glob('logs/*.jpg'), reverse=True)[0]
-plt.subplot(236)
-plt.imshow(plt.imread(img_file))
-plt.title(osp.basename(img_file))
+img_files = glob.glob('logs/*.jpg')
+if img_files:
+    img_file = sorted(img_files, reverse=True)[0]
+    plt.subplot(236)
+    plt.imshow(plt.imread(img_file))
+    plt.title(osp.basename(img_file))
 
 plt.show()
