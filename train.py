@@ -19,8 +19,6 @@ from dataset import transform
 from models import NLayerDiscriminator
 from models import ResnetGenerator
 
-import mvtk
-
 
 class ImagePool(object):
 
@@ -264,8 +262,8 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
     rec_B = rec_B.array[0].transpose(1, 2, 0)
     rec_A = cuda.to_cpu(rec_A)
     rec_B = cuda.to_cpu(rec_B)
-    viz = mvtk.image.tile(
-        [real_A, fake_B, rec_A, real_B, fake_A, rec_B], (2, 3))
+    viz = np.vstack([np.hstack([real_A, fake_B, rec_A]),
+                     np.hstack([real_B, fake_A, rec_B])])
     skimage.io.imsave(osp.join(out_dir, '{:08}.jpg'.format(epoch)), viz)
 
     S.save_npz(osp.join(out_dir, '{:08}_G_A.npz'), G_A)
