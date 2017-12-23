@@ -264,7 +264,7 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
     rec_A = cuda.to_cpu(rec_A)
     rec_B = cuda.to_cpu(rec_B)
     viz = mvtk.image.tile(
-        [real_A, fake_B, rec_B, real_B, fake_A, rec_A], (2, 3))
+        [real_A, fake_B, rec_A, real_B, fake_A, rec_B], (2, 3))
     skimage.io.imsave(osp.join(out_dir, '{:08}.jpg'.format(epoch)), viz)
 
     # update learning rate
