@@ -38,7 +38,13 @@ class Horse2ZebraDataset(object):
         path_B = self._paths['B'][index_B]
 
         img_A = skimage.io.imread(path_A)
+        if img_A.ndim == 2:
+            img_A = skimage.color.gray2rgb(img_A)
+            assert img_A.dtype == np.uint8
         img_B = skimage.io.imread(path_B)
+        if img_B.ndim == 2:
+            img_B = skimage.color.gray2rgb(img_B)
+            assert img_B.dtype == np.uint8
 
         return img_A, img_B
 
