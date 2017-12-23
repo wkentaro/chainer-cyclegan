@@ -127,6 +127,23 @@ if not osp.exists(out_dir):
     os.makedirs(out_dir)
 
 
+with open(osp.join(out_dir, 'log.csv'), 'w') as f:
+    f.write(','.join([
+        'epoch',
+        'iteration',
+        'loss_G',
+        'loss_G_A',
+        'loss_G_B',
+        'loss_idt_A',
+        'loss_idt_B',
+        'loss_cycle_A',
+        'loss_cycle_B',
+        'loss_D_A',
+        'loss_D_B',
+    ]))
+    f.write('\n')
+
+
 max_epoch = niter + niter_decay - epoch_count
 for epoch in range(epoch_count, niter + niter_decay + 1):
     for iteration in range(len(dataset)):
@@ -204,15 +221,33 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
 
         # log
         # ---------------------------------------------------------------------
-        print('>' * 79)
-        print('Epoch: {:d} ({:.1%}), Iteration: {:d} ({:.1%})'
-              .format(epoch, 1. * epoch / max_epoch,
-                      iteration, 1. * iteration / len(dataset)))
-        print('loss_G_A:', float(loss_G_A.data),
-              'loss_G_B:', float(loss_G_B.data))
-        print('loss_D_A:', float(loss_D_A.data),
-              'loss_D_B:', float(loss_D_B.data))
-        print('<' * 79)
+        if iteration % 10 == 0:
+            print('>' * 79)
+            print('Epoch: {:d}/{:d} ({:.1%}), Iteration: {:d}/{:d} ({:.1%})'
+                  .format(epoch, max_epoch, 1. * epoch / max_epoch,
+                          iteration, len(dataset),
+                          1. * iteration / len(dataset)))
+            print('loss_G_A:', float(loss_G_A.data),
+                  'loss_G_B:', float(loss_G_B.data))
+            print('loss_D_A:', float(loss_D_A.data),
+                  'loss_D_B:', float(loss_D_B.data))
+            print('<' * 79)
+
+            with open(osp.join(out_dir, 'log.csv'), 'a') as f:
+                f.write(','.join(map(str, [
+                    epoch,
+                    iteration,
+                    float(loss_G.data),
+                    float(loss_G_A.data),
+                    float(loss_G_B.data),
+                    float(loss_idt_A.data),
+                    float(loss_idt_B.data),
+                    float(loss_cycle_A.data),
+                    float(loss_cycle_B.data),
+                    float(loss_D_A.data),
+                    float(loss_D_B.data),
+                ])))
+                f.write('\n')
 
     # visualize
     # -------------------------------------------------------------------------
@@ -228,7 +263,8 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
     idt_B = idt_B.array[0].transpose(1, 2, 0)
     idt_A = cuda.to_cpu(idt_A)
     idt_B = cuda.to_cpu(idt_B)
-    viz = mvtk.image.tile([real_A, fake_B, idt_B, real_B, fake_A, idt_A], (2, 3))
+    viz = mvtk.image.tile(
+        [real_A, fake_B, idt_B, real_B, fake_A, idt_A], (2, 3))
     skimage.io.imsave(osp.join(out_dir, '{:08}.jpg'.format(epoch)), viz)
 
     # update learning rate
