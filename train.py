@@ -1,0 +1,240 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+import os
+import os.path as osp
+
+import chainer
+from chainer import cuda
+import chainer.functions as F
+import chainer.optimizers as O
+import cupy as cp
+import numpy as np
+import skimage.io
+
+from dataset import Horse2ZebraDataset
+from dataset import transform
+from models import NLayerDiscriminator
+from models import ResnetGenerator
+
+import mvtk
+
+
+class ImagePool(object):
+
+    def __init__(self, pool_size):
+        self.pool_size = pool_size
+        if self.pool_size > 0:
+            self.num_imgs = 0
+            self.images = []
+
+    def query(self, images):
+        if self.pool_size == 0:
+            return images
+
+        xp = cuda.get_array_module(images)
+
+        return_images = []
+        for image in images:
+            image = image[None]
+            if self.num_imgs < self.pool_size:
+                self.num_imgs += 1
+                self.images.append(image)
+                return_images.append(image)
+            else:
+                p = np.random.uniform(0, 1)
+                if p > 0.5:
+                    random_id = np.random.randint(0, self.pool_size)
+                    tmp = self.images[random_id].copy()
+                    self.images[random_id] = image
+                    return_images.append(tmp)
+                else:
+                    return_images.append(image)
+        return_images = chainer.Variable(xp.concatenate(return_images, axis=0))
+        return return_images
+
+gpu = 3
+
+G_A = ResnetGenerator()
+G_B = ResnetGenerator()
+D_A = NLayerDiscriminator()
+D_B = NLayerDiscriminator()
+
+if gpu >= 0:
+    cuda.get_device_from_id(gpu).use()
+    G_A.to_gpu()
+    G_B.to_gpu()
+    D_A.to_gpu()
+    D_B.to_gpu()
+
+lr = 0.0002
+beta1 = 0.5
+beta2 = 0.999
+
+optimizer_G_A = O.Adam(alpha=lr, beta1=beta1, beta2=beta2)
+optimizer_G_A.setup(G_A)
+
+optimizer_G_B = O.Adam(alpha=lr, beta1=beta1, beta2=beta2)
+optimizer_G_B.setup(G_B)
+
+optimizer_D_A = O.Adam(alpha=lr, beta1=beta1, beta2=beta2)
+optimizer_D_A.setup(D_A)
+
+optimizer_D_B = O.Adam(alpha=lr, beta1=beta1, beta2=beta2)
+optimizer_D_B.setup(D_B)
+
+# if opt.lr_policy == 'lambda':
+#     def lambda_rule(epoch):
+#         lr_l = 1.0 - max(0, epoch + 1 + opt.epoch_count - opt.niter) / float(opt.niter_decay + 1)  # NOQA
+#         return lr_l
+#     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
+
+batch_size = 1
+dataset = Horse2ZebraDataset('train')
+
+fake_A_pool = ImagePool(pool_size=50)
+fake_B_pool = ImagePool(pool_size=50)
+
+
+def backward_D_basic(D, real, fake):
+    # Real
+    pred_real = D(real)
+    loss_D_real = F.mean_squared_error(
+        pred_real, xp.ones_like(pred_real.array))
+    # Fake
+    pred_fake = D(fake.array)
+    loss_D_fake = F.mean_squared_error(
+        pred_fake, xp.zeros_like(pred_fake.array))
+    # Combined loss
+    loss_D = (loss_D_real + loss_D_fake) * 0.5
+    # backward
+    loss_D.backward()
+    return loss_D
+
+
+def lambda_rule(epoch):
+    lr_l = 1.0 - max(0, epoch + 1 + epoch_count - niter) / float(niter_decay + 1)  # NOQA
+    return lr_l
+
+
+epoch_count = 1
+niter = 100
+niter_decay = 100
+
+out_dir = 'logs'
+if not osp.exists(out_dir):
+    os.makedirs(out_dir)
+
+
+max_epoch = niter + niter_decay - epoch_count
+for epoch in range(epoch_count, niter + niter_decay + 1):
+    for iteration in range(len(dataset)):
+        img_A, img_B = transform(dataset[iteration])
+
+        assert batch_size == 1
+        real_A = img_A[None, :, :, :]
+        real_B = img_B[None, :, :, :]
+        if gpu >= 0:
+            real_A = cuda.to_gpu(real_A)
+            real_B = cuda.to_gpu(real_B)
+        real_A = chainer.Variable(real_A)
+        real_B = chainer.Variable(real_B)
+
+        # update G
+        # -------------------------------------------------------------------------
+        G_A.zerograds()
+        G_B.zerograds()
+
+        lambda_idt = 0.5
+        lambda_A = 10.0
+        lambda_B = 10.0
+
+        # G_A should be identity if real_B is fed:
+        # - b_i_hat = G_A(a_i)
+        # - b_i = a_i_hat = G_A(b_i)
+        idt_A = G_A(real_B)
+        loss_idt_A = F.mean_absolute_error(idt_A, real_B) * lambda_B * lambda_idt  # NOQA
+
+        # G_B should be identity if real_A is fed.
+        idt_B = G_B(real_A)
+        loss_idt_B = F.mean_absolute_error(idt_B, real_A) * lambda_A * lambda_idt  # NOQA
+
+        xp = cp if gpu >= 0 else np
+
+        # GAN loss D_A(G_A(A))
+        fake_B = G_A(real_A)
+        pred_fake = D_A(fake_B)
+        loss_G_A = F.mean_squared_error(pred_fake, xp.ones_like(pred_fake.array))  # NOQA
+
+        # GAN loss D_B(G_B(B))
+        fake_A = G_B(real_A)
+        pred_fake = D_B(fake_A)
+        loss_G_B = F.mean_squared_error(pred_fake, xp.ones_like(pred_fake.array))  # NOQA
+
+        # Forward cycle loss
+        rec_A = G_B(fake_B)
+        loss_cycle_A = F.mean_absolute_error(rec_A, real_A) * lambda_A
+
+        # Backward cycle loss
+        rec_B = G_A(fake_A)
+        loss_cycle_B = F.mean_absolute_error(rec_B, real_B) * lambda_B
+        # combined loss
+        loss_G = (loss_G_A + loss_G_B + loss_cycle_A + loss_cycle_B + loss_idt_A + loss_idt_B)  # NOQA
+        loss_G.backward()
+
+        optimizer_G_A.update()
+        optimizer_G_B.update()
+
+        # update D
+        # ---------------------------------------------------------------------
+        # backward D_A
+        D_A.zerograds()
+        fake_B_org = fake_B
+        fake_B = fake_B_pool.query(fake_B.array)
+        loss_D_A = backward_D_basic(D_A, real_B, fake_B)
+        optimizer_D_A.update()
+
+        # backward D_B
+        D_B.zerograds()
+        fake_A_org = fake_A
+        fake_A = fake_A_pool.query(fake_A.array)
+        loss_D_B = backward_D_basic(D_B, real_A, fake_A)
+        optimizer_D_B.update()
+
+        # log
+        # ---------------------------------------------------------------------
+        print('>' * 79)
+        print('Epoch: {:d} ({:.1%}), Iteration: {:d} ({:.1%})'
+              .format(epoch, 1. * epoch / max_epoch,
+                      iteration, 1. * iteration / len(dataset)))
+        print('loss_G_A:', float(loss_G_A.data),
+              'loss_G_B:', float(loss_G_B.data))
+        print('loss_D_A:', float(loss_D_A.data),
+              'loss_D_B:', float(loss_D_B.data))
+        print('<' * 79)
+
+    # visualize
+    # -------------------------------------------------------------------------
+    real_A = real_A.array[0].transpose(1, 2, 0)
+    real_B = real_B.array[0].transpose(1, 2, 0)
+    real_A = cuda.to_cpu(real_A)
+    real_B = cuda.to_cpu(real_B)
+    fake_A = fake_A_org.array[0].transpose(1, 2, 0)
+    fake_B = fake_B_org.array[0].transpose(1, 2, 0)
+    fake_A = cuda.to_cpu(fake_A)
+    fake_B = cuda.to_cpu(fake_B)
+    idt_A = idt_A.array[0].transpose(1, 2, 0)
+    idt_B = idt_B.array[0].transpose(1, 2, 0)
+    idt_A = cuda.to_cpu(idt_A)
+    idt_B = cuda.to_cpu(idt_B)
+    viz = mvtk.image.tile([real_A, fake_B, idt_B, real_B, fake_A, idt_A], (2, 3))
+    skimage.io.imsave(osp.join(out_dir, '{:08}.jpg'.format(epoch)), viz)
+
+    # update learning rate
+    # -------------------------------------------------------------------------
+    lr_new = lambda_rule(epoch)
+    optimizer_G_A.alpha *= lr_new
+    optimizer_G_B.alpha *= lr_new
+    optimizer_D_A.alpha *= lr_new
+    optimizer_D_B.alpha *= lr_new
