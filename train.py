@@ -237,7 +237,7 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
             with open(osp.join(out_dir, 'log.csv'), 'a') as f:
                 f.write(','.join(map(str, [
                     epoch,
-                    iteration,
+                    ((epoch - 1) * len(dataset)) + iteration,
                     float(loss_G.data),
                     float(loss_G_A.data),
                     float(loss_G_B.data),

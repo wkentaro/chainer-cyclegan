@@ -10,9 +10,6 @@ import seaborn as sns
 
 df = pd.read_csv('logs/log.csv')
 
-# FIXME
-df['iteration'] += (df['epoch'] - 1) * df['iteration'].max()
-
 plt.figure(dpi=100, figsize=(16, 8))
 
 ax = plt.subplot(231)
