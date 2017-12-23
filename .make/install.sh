@@ -27,3 +27,5 @@ python -c 'import torch' &>/dev/null || conda install pytorch cuda80 -c soumith 
 python -c 'import cv2' &>/dev/null || conda install opencv -c menpo -y
 python -c 'import chainer' &>/dev/null || pip install chainer
 python -c 'import skimage' &>/dev/null || pip install scikit-image
+
+$ROOT/download_horse2zebra.sh
