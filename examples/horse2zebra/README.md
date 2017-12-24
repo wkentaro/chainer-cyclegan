@@ -1,6 +1,13 @@
 # Horse2Zebra
 
 
+## Training
+
+```bash
+./train.py --gpu 0
+```
+
+
 ## PyTorch to Chainer
 
 ```bash
@@ -12,10 +19,3 @@
 
 <img src=".readme/horse2zebra_pytorch.jpg" width="60%" />
 <img src=".readme/horse2zebra_chainer.jpg" width="60%" />
-
-
-## Training
-
-```bash
-./train.py --gpu 0
-```
