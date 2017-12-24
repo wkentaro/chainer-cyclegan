@@ -33,5 +33,3 @@ python -c 'import IPython' &>/dev/null || pip install ipython
 python -c 'import pipdeptree' &>/dev/null || pip install pipdeptree
 python -c 'import pandas' &>/dev/null || pip install pandas
 python -c 'import seaborn' &>/dev/null || pip install seaborn
-
-$ROOT/download_horse2zebra.sh

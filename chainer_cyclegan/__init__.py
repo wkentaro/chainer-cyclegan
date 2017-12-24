@@ -1,3 +1,4 @@
 # flake8: noqa
-from . import links
-from . import models
+from chainer_cyclegan import datasets
+from chainer_cyclegan import links
+from chainer_cyclegan import models

@@ -1,26 +1,33 @@
-#!/usr/bin/env python
-
 import collections
 import glob
 import os.path as osp
 
+import chainer
+import chainercv
 import numpy as np
+import PIL.Image
 import skimage.io
 
 
-here = osp.dirname(osp.abspath(__file__))
+ROOT_DIR = chainer.dataset.get_dataset_directory('wkentaro/chainer-cyclegan')
 
 
-class Horse2ZebraDataset(object):
+def _imread_as_rgb(filename):
+    img = skimage.io.imread(filename)
+    if img.ndim == 2:
+        img = skimage.color.gray2rgb(img)
+        assert img.dtype == np.uint8
+    return img
 
-    def __init__(self, split):
+
+class UnpairedDatasetBase(object):
+
+    def __init__(self, root_dir, split):
         assert split in ['train', 'test']
-
-        dataset_dir = osp.join(here, 'data/horse2zebra')
 
         paths = collections.defaultdict(list)
         for domain in 'AB':
-            domain_dir = osp.join(dataset_dir, '%s%s' % (split, domain))
+            domain_dir = osp.join(root_dir, '%s%s' % (split, domain))
             for img_file in glob.glob(osp.join(domain_dir, '*')):
                 img_file = osp.join(domain_dir, img_file)
                 paths[domain].append(img_file)
@@ -28,7 +35,7 @@ class Horse2ZebraDataset(object):
         self._size = {k: len(v) for k, v in self._paths.items()}
 
     def __len__(self):
-        return max(self._size.values())
+        return max(self._size[domain] for domain in 'AB')
 
     def __getitem__(self, index):
         index_A = index % self._size['A']
@@ -37,22 +44,13 @@ class Horse2ZebraDataset(object):
         path_A = self._paths['A'][index_A]
         path_B = self._paths['B'][index_B]
 
-        img_A = skimage.io.imread(path_A)
-        if img_A.ndim == 2:
-            img_A = skimage.color.gray2rgb(img_A)
-            assert img_A.dtype == np.uint8
-        img_B = skimage.io.imread(path_B)
-        if img_B.ndim == 2:
-            img_B = skimage.color.gray2rgb(img_B)
-            assert img_B.dtype == np.uint8
+        img_A = _imread_as_rgb(path_A)
+        img_B = _imread_as_rgb(path_B)
 
         return img_A, img_B
 
 
 def transform(in_data):
-    import chainercv
-    import PIL.Image
-
     load_size = 286
     fine_size = 256
 
@@ -70,17 +68,3 @@ def transform(in_data):
         out_data.append(img)
 
     return tuple(out_data)
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    dataset = Horse2ZebraDataset(split='train')
-    for i in range(len(dataset)):
-        img_A, img_B = dataset[i]
-        plt.subplot(121)
-        plt.title('img_A')
-        plt.imshow(img_A)
-        plt.subplot(122)
-        plt.title('img_B')
-        plt.imshow(img_B)
-        plt.show()

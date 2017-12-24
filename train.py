@@ -17,11 +17,10 @@ import cupy as cp
 import numpy as np
 import skimage.io
 
+from chainer_cyclegan.datasets import Horse2ZebraDataset
+from chainer_cyclegan.datasets import transform
 from chainer_cyclegan.models import NLayerDiscriminator
 from chainer_cyclegan.models import ResnetGenerator
-
-from dataset import Horse2ZebraDataset
-from dataset import transform
 
 
 class ImagePool(object):
@@ -92,11 +91,6 @@ optimizer_D_A.setup(D_A)
 optimizer_D_B = O.Adam(alpha=lr, beta1=beta1, beta2=beta2)
 optimizer_D_B.setup(D_B)
 
-# if opt.lr_policy == 'lambda':
-#     def lambda_rule(epoch):
-#         lr_l = 1.0 - max(0, epoch + 1 + opt.epoch_count - opt.niter) / float(opt.niter_decay + 1)  # NOQA
-#         return lr_l
-#     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
 
 batch_size = 1
 dataset = Horse2ZebraDataset('train')
