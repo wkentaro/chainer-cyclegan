@@ -46,21 +46,28 @@ class UnpairedDatasetBase(object):
         return img_A, img_B
 
 
+class CycleGANTransform(object):
+
+    def __init__(self, load_size=(286, 286), fine_size=(256, 256)):
+        self._load_size = load_size
+        self._fine_size = fine_size
+
+    def __call__(self, in_data):
+        out_data = []
+        for img in in_data:
+            img = img.transpose(2, 0, 1)
+            img = chainercv.transforms.resize(
+                img, size=self._load_size,
+                interpolation=PIL.Image.BICUBIC)
+            img = chainercv.transforms.random_crop(
+                img, size=self._fine_size)
+            img = chainercv.transforms.random_flip(img, x_random=True)
+            img = img.astype(np.float32) / 255  # ToTensor
+            img = (img - 0.5) / 0.5  # Normalize
+            out_data.append(img)
+
+        return tuple(out_data)
+
+
 def transform(in_data):
-    load_size = 286
-    fine_size = 256
-
-    out_data = []
-    for img in in_data:
-        img = img.transpose(2, 0, 1)
-        img = chainercv.transforms.resize(
-            img, size=(load_size, load_size),
-            interpolation=PIL.Image.BICUBIC)
-        img = chainercv.transforms.random_crop(
-            img, size=(fine_size, fine_size))
-        img = chainercv.transforms.random_flip(img, x_random=True)
-        img = img.astype(np.float32) / 255  # ToTensor
-        img = (img - 0.5) / 0.5  # Normalize
-        out_data.append(img)
-
-    return tuple(out_data)
+    return CycleGANTransform()(in_data)
