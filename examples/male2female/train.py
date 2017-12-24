@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import os.path as osp
 import sys
+
+os.environ['MPLBACKEND'] = 'Agg'
 
 import chainer
 import numpy as np
