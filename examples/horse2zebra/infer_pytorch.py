@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import os
 import os.path as osp
 import sys
 
@@ -30,6 +31,9 @@ def main():
                         help='Image file.')
     args = parser.parse_args()
 
+    if args.gpu >= 0:
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
+
     print('GPU id: {:d}'.format(args.gpu))
     print('Model file: {:s}'.format(args.model_file))
     print('Image file: {:s}'.format(args.img_file))
@@ -45,7 +49,7 @@ def main():
         padding_type='reflect',
     )
     model.load_state_dict(torch.load(args.model_file))
-    if args.gpu >= 0:
+    if torch.cuda.is_available():
         model = model.cuda()
     model = model.eval()
 
@@ -58,7 +62,7 @@ def main():
     xi = xi.transpose(2, 0, 1)
     x = np.repeat(xi[None, :, :, :], batch_size, axis=0)
     x = torch.from_numpy(x)
-    if args.gpu >= 0:
+    if torch.cuda.is_available():
         x = x.cuda()
     x = Variable(x, volatile=True)
 
