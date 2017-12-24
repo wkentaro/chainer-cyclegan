@@ -11,7 +11,7 @@ import torch
 from torch.autograd import Variable
 
 here = osp.dirname(osp.realpath(__file__))
-pytorch_dir = osp.join(here, 'src/pytorch-cyclegan')
+pytorch_dir = osp.join(here, '../../src/pytorch-cyclegan')
 
 sys.path.insert(0, pytorch_dir)
 from models import networks
