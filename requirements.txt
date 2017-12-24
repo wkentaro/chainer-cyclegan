@@ -1,3 +1,4 @@
 chainer
+chainercv
 pandas
 scikit-image
