@@ -243,7 +243,7 @@ class Evaluator(training.Extension):
 
         out_file = osp.join(
             trainer.out, 'evaluations',
-            '{:06}.png'.format(trainer.updater.epoch))
+            '{:08}.png'.format(trainer.updater.epoch))
         if not osp.exists(osp.dirname(out_file)):
             os.makedirs(osp.dirname(out_file))
         out = fcn.utils.get_tile_image(vizs, self._shape)
@@ -323,7 +323,16 @@ def main():
         updater, (niter + niter_decay, 'epoch'), out=out)
 
     trainer.extend(extensions.snapshot_object(
-        target=G_A, filename='G_A_{.updater.epoch}.npz'),
+        target=G_A, filename='G_A_{.updater.epoch:08}.npz'),
+        trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot_object(
+        target=G_B, filename='G_B_{.updater.epoch:08}.npz'),
+        trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot_object(
+        target=D_A, filename='D_A_{.updater.epoch:08}.npz'),
+        trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot_object(
+        target=D_B, filename='D_B_{.updater.epoch:08}.npz'),
         trigger=(1, 'epoch'))
 
     trainer.extend(extensions.LogReport(trigger=(20, 'iteration')))
