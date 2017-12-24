@@ -25,36 +25,34 @@ from chainer_cyclegan.models import ResnetGenerator
 
 class ImagePool(object):
 
-    def __init__(self, pool_size):
-        self.pool_size = pool_size
-        if self.pool_size > 0:
-            self.num_imgs = 0
-            self.images = []
+    def __init__(self, size):
+        self._size = size
+        self.pool = []
 
-    def query(self, images):
-        if self.pool_size == 0:
-            return images
+    def query(self, imgs):
+        if self._size == 0:
+            return imgs
 
-        xp = cuda.get_array_module(images)
+        xp = cuda.get_array_module(imgs)
 
-        return_images = []
-        for image in images:
-            image = image[None]
-            if self.num_imgs < self.pool_size:
-                self.num_imgs += 1
-                self.images.append(image)
-                return_images.append(image)
+        res = []
+        for img in imgs:
+            img = img[None]
+            if len(self.pool) < self._size:
+                self.pool.append(img)
+                res.append(img)
             else:
                 p = np.random.uniform(0, 1)
                 if p > 0.5:
-                    random_id = np.random.randint(0, self.pool_size)
-                    tmp = self.images[random_id].copy()
-                    self.images[random_id] = image
-                    return_images.append(tmp)
+                    random_id = np.random.randint(0, self._size)
+                    tmp = self.pool[random_id].copy()
+                    self.pool[random_id] = img
+                    res.append(tmp)
                 else:
-                    return_images.append(image)
-        return_images = chainer.Variable(xp.concatenate(return_images, axis=0))
-        return return_images
+                    res.append(img)
+        res = chainer.Variable(xp.concatenate(res, axis=0))
+
+        return res
 
 
 def backward_D_basic(D, real, fake):
@@ -119,8 +117,8 @@ def main():
     batch_size = 1
     dataset = Horse2ZebraDataset('train')
 
-    fake_A_pool = ImagePool(pool_size=50)
-    fake_B_pool = ImagePool(pool_size=50)
+    fake_A_pool = ImagePool(size=50)
+    fake_B_pool = ImagePool(size=50)
 
     epoch_count = 1
     niter = 100
