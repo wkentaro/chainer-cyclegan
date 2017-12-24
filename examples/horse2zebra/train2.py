@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import argparse
+import copy
 import datetime
 import os
 import os.path as osp
@@ -196,8 +197,11 @@ class Evaluator(training.Extension):
         G_A = trainer.updater.get_optimizer('G_A').target
         G_B = trainer.updater.get_optimizer('G_B').target
 
+        iterator = self._iterator
+        it = copy.copy(iterator)
+
         vizs = []
-        for batch in self._iterator:
+        for batch in it:
             batch_A, batch_B = zip(*batch)
             real_A = chainer.Variable(self.converter(batch_A, self.device))
             real_B = chainer.Variable(self.converter(batch_B, self.device))
