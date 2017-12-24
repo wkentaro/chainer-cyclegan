@@ -28,8 +28,10 @@ from chainer_cyclegan.training.updaters import CycleGANUpdater
 def train(dataset_train, dataset_test):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-g', '--gpu', type=int, required=True)
-    parser.add_argument('-b', '--batch_size', type=int, default=1)
+    parser.add_argument('-g', '--gpu', type=int, required=True,
+                        help='GPU id.')
+    parser.add_argument('-b', '--batch_size', type=int, default=1,
+                        help='Batch size.')
     args = parser.parse_args()
 
     np.random.seed(0)
