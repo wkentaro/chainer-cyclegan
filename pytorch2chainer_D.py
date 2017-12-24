@@ -9,12 +9,11 @@ import chainer.links as L
 import torch
 import numpy as np
 
-from instance_normalization import InstanceNormalization
+from chainer_cyclegan.links import InstanceNormalization
+from chainer_cyclegan.models import NLayerDiscriminator
+
 
 here = osp.dirname(osp.realpath(__file__))
-
-sys.path.insert(0, osp.join(here, '..'))
-from models import NLayerDiscriminator
 
 model_file = osp.join(here, 'data/D_random.pth')
 state_dict = torch.load(model_file)

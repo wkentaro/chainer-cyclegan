@@ -17,10 +17,11 @@ import cupy as cp
 import numpy as np
 import skimage.io
 
+from chainer_cyclegan.models import NLayerDiscriminator
+from chainer_cyclegan.models import ResnetGenerator
+
 from dataset import Horse2ZebraDataset
 from dataset import transform
-from models import NLayerDiscriminator
-from models import ResnetGenerator
 
 
 class ImagePool(object):
