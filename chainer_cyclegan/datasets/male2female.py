@@ -24,7 +24,7 @@ def mkdir_p(*path):
     return path
 
 
-class Male2Female(UnpairedDatasetBase):
+class Male2FemaleDataset(UnpairedDatasetBase):
 
     def __init__(self, split):
         assert split in ['train', 'test']
@@ -64,7 +64,7 @@ class Male2Female(UnpairedDatasetBase):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    dataset = Male2Female('train')
+    dataset = Male2FemaleDataset('train')
     for i in range(len(dataset)):
         img_A, img_B = dataset[i]
         plt.subplot(121)
