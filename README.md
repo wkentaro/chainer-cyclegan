@@ -8,18 +8,27 @@ Chainer implementation of [pytorch-CycleGAN-and-pix2pix](https://github.com/juny
 make install
 ```
 
-## Convert PyTorch Model to Chainer
+
+## Horse2Zebra
 
 ```bash
-make pytorch2chainer
-make test_pytorch2chainer
+cd examples/horse2zebra
+```
+
+### PyTorch to Chainer
+
+```bash
+./download_models.sh
+
+./infer_pytorch.py
+./infer_chainer.py
 ```
 
 <img src=".readme/horse2zebra_pytorch.jpg" width="60%" />
 <img src=".readme/horse2zebra_chainer.jpg" width="60%" />
 
+### Training
 
-## TODO
-
-- [ ] Write updater.
-- [ ] Write `train.py`.
+```bash
+./train.py --gpu 0
+```
