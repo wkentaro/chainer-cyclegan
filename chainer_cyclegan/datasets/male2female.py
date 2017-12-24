@@ -5,6 +5,7 @@ import shutil
 
 import chainer
 import chainercv
+from sklearn.model_selection import train_test_split
 
 from .base import UnpairedDatasetBase
 
@@ -34,7 +35,7 @@ class Male2FemaleDataset(UnpairedDatasetBase):
         if not osp.exists(img_dir) or not osp.exists(anno_file):
             self.download()
 
-        self._paths = {'A': [], 'B': []}
+        paths = {'A': [], 'B': []}
         with open(anno_file, 'r') as f:
             reader = csv.reader(f, delimiter=' ', skipinitialspace=True)
             next(reader)  # number
@@ -42,11 +43,19 @@ class Male2FemaleDataset(UnpairedDatasetBase):
             for row in reader:
                 img_file = osp.join(img_dir, row[0])
                 if row[21] == '1':
-                    self._paths['A'].append(img_file)
+                    paths['A'].append(img_file)
                 elif row[21] == '-1':
-                    self._paths['B'].append(img_file)
+                    paths['B'].append(img_file)
                 else:
                     raise ValueError
+
+        random_state = 1234
+        paths_A, paths_B = {}, {}
+        paths_A['train'], paths_A['test'] = train_test_split(
+            paths['A'], test_size=0.25, random_state=random_state)
+        paths_B['train'], paths_B['test'] = train_test_split(
+            paths['B'], test_size=0.25, random_state=random_state)
+        self._paths = {'A': paths_A[split], 'B': paths_B[split]}
         self._size = {k: len(v) for k, v in self._paths.items()}
 
     @staticmethod
