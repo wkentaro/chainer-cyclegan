@@ -7,6 +7,9 @@ This is a faithful re-implementation of [the official implementation](https://gi
 ## Installation
 
 ```bash
-git clone https://github.com/wkentaro/chainer-cyclegan.git && cd chainer-cyclegan
-make install
+git clone --recursive https://github.com/wkentaro/chainer-cyclegan.git
+cd chainer-cyclegan
+
+conda install -c menpo -y opencv
+pip install .
 ```

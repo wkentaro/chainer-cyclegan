@@ -11,6 +11,9 @@
 ## PyTorch to Chainer
 
 ```bash
+# install pytorch
+conda install -c soumith -y pytorch cuda80
+
 ./download_models.sh
 
 ./infer_pytorch.py

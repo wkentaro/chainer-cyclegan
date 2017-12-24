@@ -1,0 +1,4 @@
+[submodule "src/pytorch-cyclegan"]
+	path = src/pytorch-cyclegan
+	url = https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix.git
+	version = 929454c133fb19c03264b00179dae25f458efd36
