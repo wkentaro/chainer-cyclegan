@@ -117,16 +117,20 @@ def train(dataset_train, dataset_test):
     assert extensions.PlotReport.available()
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_gen_A', 'G_A/loss_gen_B'],
-        x_key='iteration', file_name='loss_gen.png'))
+        x_key='iteration', file_name='loss_gen.png',
+        trigger=(100 // args.batch_size, 'iteration')))
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_dis_A', 'G_A/loss_dis_B'],
-        x_key='iteration', file_name='loss_dis.png'))
+        x_key='iteration', file_name='loss_dis.png',
+        trigger=(100 // args.batch_size, 'iteration')))
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_cyc_A', 'G_A/loss_cyc_B'],
-        x_key='iteration', file_name='loss_cyc.png'))
+        x_key='iteration', file_name='loss_cyc.png',
+        trigger=(100 // args.batch_size, 'iteration')))
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_idt_A', 'G_A/loss_idt_B'],
-        x_key='iteration', file_name='loss_idt.png'))
+        x_key='iteration', file_name='loss_idt.png',
+        trigger=(100 // args.batch_size, 'iteration')))
 
     trainer.extend(extensions.PrintReport([
         'epoch', 'iteration', 'elapsed_time',
