@@ -266,10 +266,10 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
                      np.hstack([real_B, fake_A, rec_B])])
     skimage.io.imsave(osp.join(out_dir, '{:08}.jpg'.format(epoch)), viz)
 
-    S.save_npz(osp.join(out_dir, '{:08}_G_A.npz'), G_A)
-    S.save_npz(osp.join(out_dir, '{:08}_G_B.npz'), G_B)
-    S.save_npz(osp.join(out_dir, '{:08}_D_A.npz'), D_A)
-    S.save_npz(osp.join(out_dir, '{:08}_D_B.npz'), D_B)
+    S.save_npz(osp.join(out_dir, '{:08}_G_A.npz'.format(epoch)), G_A)
+    S.save_npz(osp.join(out_dir, '{:08}_G_B.npz'.format(epoch)), G_B)
+    S.save_npz(osp.join(out_dir, '{:08}_D_A.npz'.format(epoch)), D_A)
+    S.save_npz(osp.join(out_dir, '{:08}_D_B.npz'.format(epoch)), D_B)
 
     # update learning rate
     # -------------------------------------------------------------------------
