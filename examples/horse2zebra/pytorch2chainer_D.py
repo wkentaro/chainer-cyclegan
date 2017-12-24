@@ -23,12 +23,10 @@ for k, v in state_dict.items():
     print(k)
     if 'running' not in k:
         params.append(v.numpy().flatten())
-parmas = np.hstack(params)
+params = np.hstack(params)
 print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-print(np.hstack(params).max())
-print(np.hstack(params).min())
-print(np.hstack(params).mean())
-print(np.hstack(params).size)
+print('D original (PyTorch)')
+print(params.size, params.min(), params.mean(), params.max())
 print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
 model = NLayerDiscriminator()
@@ -36,15 +34,12 @@ model = NLayerDiscriminator()
 params = []
 for param in model.params():
     params.append(param.array.flatten())
-parmas = np.hstack(params)
+params = np.hstack(params)
 print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-print(np.hstack(params).max())
-print(np.hstack(params).min())
-print(np.hstack(params).mean())
-print(np.hstack(params).size)
+print('D init (Chainer)')
+print(params.size, params.min(), params.mean(), params.max())
 print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 for i, func in enumerate(model.functions):
-    print(i, func)
     if isinstance(func, L.Convolution2D):
         np.copyto(func.W.array, state_dict['model.{:d}.weight'.format(i)].numpy())
         np.copyto(func.b.array, state_dict['model.{:d}.bias'.format(i)].numpy())
@@ -55,14 +50,12 @@ for i, func in enumerate(model.functions):
 params = []
 for param in model.params():
     params.append(param.array.flatten())
-parmas = np.hstack(params)
+params = np.hstack(params)
 print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-print(np.hstack(params).max())
-print(np.hstack(params).min())
-print(np.hstack(params).mean())
-print(np.hstack(params).size)
+print('D copied (Chainer)')
+print(params.size, params.min(), params.mean(), params.max())
 print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
 model_file = osp.join(here, 'data/D_random_from_pytorch.npz')
 chainer.serializers.save_npz(model_file, model)
-print('==> {:s}'.format(model_file))
+print('Saved model file: {:s}'.format(model_file))
