@@ -73,11 +73,6 @@ def backward_D_basic(D, real, fake):
     return loss_D
 
 
-def lambda_rule(epoch):
-    lr_l = 1.0 - max(0, epoch + 1 + epoch_count - niter) / float(niter_decay + 1)  # NOQA
-    return lr_l
-
-
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -123,6 +118,11 @@ def main():
     epoch_count = 1
     niter = 100
     niter_decay = 100
+
+    def lambda_rule(epoch):
+        lr_l = 1.0 - (max(0, epoch + 1 + epoch_count - niter) /
+                      float(niter_decay + 1))
+        return lr_l
 
     out_dir = osp.join(
         'logs', datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
