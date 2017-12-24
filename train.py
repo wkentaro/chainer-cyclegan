@@ -2,8 +2,11 @@
 
 from __future__ import print_function
 
+import argparse
+import datetime
 import os
 import os.path as osp
+import time
 
 import chainer
 from chainer import cuda
@@ -53,7 +56,12 @@ class ImagePool(object):
         return_images = chainer.Variable(xp.concatenate(return_images, axis=0))
         return return_images
 
-gpu = 3
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('-g', '--gpu', type=int, required=True)
+args = parser.parse_args()
+
+gpu = args.gpu
 
 G_A = ResnetGenerator()
 G_B = ResnetGenerator()
@@ -121,7 +129,7 @@ epoch_count = 1
 niter = 100
 niter_decay = 100
 
-out_dir = 'logs'
+out_dir = osp.join('logs', datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
 if not osp.exists(out_dir):
     os.makedirs(out_dir)
 
@@ -144,8 +152,11 @@ with open(osp.join(out_dir, 'log.csv'), 'w') as f:
 
 
 max_epoch = niter + niter_decay - epoch_count
+dataset_size = len(dataset)
 for epoch in range(epoch_count, niter + niter_decay + 1):
-    for iteration in range(len(dataset)):
+    t_start = time.time()
+
+    for iteration in range(dataset_size):
         img_A, img_B = transform(dataset[iteration])
 
         assert batch_size == 1
@@ -220,31 +231,47 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
 
         # log
         # ---------------------------------------------------------------------
-        if iteration % 10 == 0:
-            print('>' * 79)
-            print('Epoch: {:d}/{:d} ({:.1%}), Iteration: {:d}/{:d} ({:.1%})'
+        if iteration % 100 == 0:
+            time_per_iter = (time.time() - t_start) / (iteration + 1)
+
+            loss_G_A = float(loss_G_A.data)
+            loss_G_B = float(loss_G_B.data)
+            loss_D_A = float(loss_D_A.data)
+            loss_D_B = float(loss_D_B.data)
+            loss_cycle_A = float(loss_cycle_A.data)
+            loss_cycle_B = float(loss_cycle_B.data)
+            loss_idt_A = float(loss_idt_A.data)
+            loss_idt_B = float(loss_idt_B.data)
+
+            print('-' * 79)
+            print('Epoch: {:d}/{:d} ({:.1%}), Iteration: {:d}/{:d} ({:.1%}), '
+                  'Time: {:f}'
                   .format(epoch, max_epoch, 1. * epoch / max_epoch,
-                          iteration, len(dataset),
-                          1. * iteration / len(dataset)))
-            print('loss_G_A:', float(loss_G_A.data),
-                  'loss_G_B:', float(loss_G_B.data))
-            print('loss_D_A:', float(loss_D_A.data),
-                  'loss_D_B:', float(loss_D_B.data))
-            print('<' * 79)
+                          iteration, dataset_size,
+                          1. * iteration / dataset_size, time_per_iter))
+
+            print('G_A: {:.2f}'.format(loss_G_A),
+                  'G_B: {:.2f}'.format(loss_G_B),
+                  'D_A: {:.2f}'.format(loss_D_A),
+                  'D_B: {:.2f}'.format(loss_D_B),
+                  'C_A: {:.2f}'.format(loss_cycle_A),
+                  'C_B: {:.2f}'.format(loss_cycle_B),
+                  'I_A: {:.2f}'.format(loss_idt_A),
+                  'I_B: {:.2f}'.format(loss_idt_B))
 
             with open(osp.join(out_dir, 'log.csv'), 'a') as f:
                 f.write(','.join(map(str, [
                     epoch,
-                    ((epoch - 1) * len(dataset)) + iteration,
-                    float(loss_G.data),
-                    float(loss_G_A.data),
-                    float(loss_G_B.data),
-                    float(loss_idt_A.data),
-                    float(loss_idt_B.data),
-                    float(loss_cycle_A.data),
-                    float(loss_cycle_B.data),
-                    float(loss_D_A.data),
-                    float(loss_D_B.data),
+                    ((epoch - 1) * dataset_size) + iteration,
+                    loss_G,
+                    loss_G_A,
+                    loss_G_B,
+                    loss_idt_A,
+                    loss_idt_B,
+                    loss_cycle_A,
+                    loss_cycle_B,
+                    loss_D_A,
+                    loss_D_B,
                 ])))
                 f.write('\n')
 
