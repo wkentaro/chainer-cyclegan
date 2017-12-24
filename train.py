@@ -234,6 +234,7 @@ for epoch in range(epoch_count, niter + niter_decay + 1):
         if iteration % 100 == 0:
             time_per_iter = (time.time() - t_start) / (iteration + 1)
 
+            loss_G = float(loss_G.data)
             loss_G_A = float(loss_G_A.data)
             loss_G_B = float(loss_G_B.data)
             loss_D_A = float(loss_D_A.data)
