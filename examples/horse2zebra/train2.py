@@ -345,20 +345,16 @@ def main():
     assert extensions.PlotReport.available()
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_gen_A', 'G_A/loss_gen_B'],
-        x_key='iteration', file_name='loss_gen.png',
-        trigger=(100, 'iteration')))
+        x_key='iteration', file_name='loss_gen.png'))
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_dis_A', 'G_A/loss_dis_B'],
-        x_key='iteration', file_name='loss_dis.png',
-        trigger=(100, 'iteration')))
+        x_key='iteration', file_name='loss_dis.png'))
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_cyc_A', 'G_A/loss_cyc_B'],
-        x_key='iteration', file_name='loss_cyc.png',
-        trigger=(100, 'iteration')))
+        x_key='iteration', file_name='loss_cyc.png'))
     trainer.extend(extensions.PlotReport(
         y_keys=['G_A/loss_idt_A', 'G_A/loss_idt_B'],
-        x_key='iteration', file_name='loss_idt.png',
-        trigger=(100, 'iteration')))
+        x_key='iteration', file_name='loss_idt.png'))
 
     trainer.extend(extensions.PrintReport([
         'epoch', 'iteration', 'elapsed_time',
