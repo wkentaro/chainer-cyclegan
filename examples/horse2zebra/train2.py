@@ -206,14 +206,15 @@ class Evaluator(training.Extension):
             real_A = chainer.Variable(self.converter(batch_A, self.device))
             real_B = chainer.Variable(self.converter(batch_B, self.device))
 
-            idt_B = G_A(real_B)
-            idt_A = G_B(real_A)
+            with chainer.using_config('enable_backprop', False):
+                idt_B = G_A(real_B)
+                idt_A = G_B(real_A)
 
-            fake_B = G_A(real_A)
-            fake_A = G_B(real_B)
+                fake_B = G_A(real_A)
+                fake_A = G_B(real_B)
 
-            rec_B = G_A(fake_A)
-            rec_A = G_B(fake_B)
+                rec_B = G_A(fake_A)
+                rec_A = G_B(fake_B)
 
             real_A = cuda.to_cpu(real_A.array).transpose(0, 2, 3, 1)
             real_B = cuda.to_cpu(real_B.array).transpose(0, 2, 3, 1)
