@@ -1,4 +1,5 @@
 # flake8: noqa
-from chainer_cyclegan import datasets
-from chainer_cyclegan import links
-from chainer_cyclegan import models
+from . import datasets
+from . import links
+from . import models
+from . import training

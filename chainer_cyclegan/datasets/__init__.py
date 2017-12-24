@@ -1,4 +1,5 @@
 # flake8: noqa
+from .base import CycleGANTransform
 from .base import transform
 from .base import UnpairedDatasetBase
 
