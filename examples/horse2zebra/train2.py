@@ -220,14 +220,14 @@ class Evaluator(training.Extension):
             rec_A = cuda.to_cpu(rec_A.array).transpose(0, 2, 3, 1)
             rec_B = cuda.to_cpu(rec_B.array).transpose(0, 2, 3, 1)
 
-            real_A = (real_A + 1) / 2
-            real_B = (real_B + 1) / 2
-            idt_A = (idt_A + 1) / 2
-            idt_B = (idt_B + 1) / 2
-            fake_A = (fake_A + 1) / 2
-            fake_B = (fake_B + 1) / 2
-            rec_A = (rec_A + 1) / 2
-            rec_B = (rec_B + 1) / 2
+            real_A = ((real_A + 1) / 2 * 255).astype(np.uint8)
+            real_B = ((real_B + 1) / 2 * 255).astype(np.uint8)
+            idt_A = ((idt_A + 1) / 2 * 255).astype(np.uint8)
+            idt_B = ((idt_B + 1) / 2 * 255).astype(np.uint8)
+            fake_A = ((fake_A + 1) / 2 * 255).astype(np.uint8)
+            fake_B = ((fake_B + 1) / 2 * 255).astype(np.uint8)
+            rec_A = ((rec_A + 1) / 2 * 255).astype(np.uint8)
+            rec_B = ((rec_B + 1) / 2 * 255).astype(np.uint8)
 
             batch_size = len(real_A)
             for i in range(batch_size):
@@ -235,7 +235,6 @@ class Evaluator(training.Extension):
                     np.hstack([real_A[i], fake_B[i], rec_A[i], idt_A[i]]),
                     np.hstack([real_B[i], fake_A[i], rec_B[i], idt_B[i]]),
                 ])
-                viz = skimage.util.img_as_ubyte(viz)
                 vizs.append(viz)
                 if len(vizs) >= (self._shape[0] * self._shape[1]):
                     break
