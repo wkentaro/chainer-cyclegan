@@ -2,19 +2,22 @@
 
 import os.path as osp
 
+import chainer
 import chainercv
 
-from .base import ROOT_DIR
 from .base import UnpairedDatasetBase
+
+
+ROOT_DIR = chainer.dataset.get_dataset_directory('wkentaro/chainer-cyclegan')
 
 
 class Horse2ZebraDataset(UnpairedDatasetBase):
 
     def __init__(self, split):
-        root_dir = osp.join(ROOT_DIR, 'horse2zebra')
-        if not osp.exists(root_dir):
+        img_dir = osp.join(ROOT_DIR, 'horse2zebra')
+        if not osp.exists(img_dir):
             self.download()
-        super(Horse2ZebraDataset, self).__init__(root_dir, split)
+        super(Horse2ZebraDataset, self).__init__(img_dir, split)
 
     def download(self):
         url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip'  # NOQA

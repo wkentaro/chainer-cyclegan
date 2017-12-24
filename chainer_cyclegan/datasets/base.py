@@ -2,14 +2,10 @@ import collections
 import glob
 import os.path as osp
 
-import chainer
 import chainercv
 import numpy as np
 import PIL.Image
 import skimage.io
-
-
-ROOT_DIR = chainer.dataset.get_dataset_directory('wkentaro/chainer-cyclegan')
 
 
 def _imread_as_rgb(filename):
