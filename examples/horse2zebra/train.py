@@ -25,18 +25,10 @@ from chainer_cyclegan.training.extensions import CycleGANEvaluator
 from chainer_cyclegan.training.updaters import CycleGANUpdater
 
 
-def train(dataset_train, dataset_test):
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-g', '--gpu', type=int, required=True,
-                        help='GPU id.')
-    parser.add_argument('-b', '--batch_size', type=int, default=1,
-                        help='Batch size.')
-    args = parser.parse_args()
-
+def train(dataset_train, dataset_test, gpu, batch_size):
     np.random.seed(0)
-    if args.gpu >= 0:
-        chainer.cuda.get_device_from_id(args.gpu).use()
+    if gpu >= 0:
+        chainer.cuda.get_device_from_id(gpu).use()
         cp.random.seed(0)
 
     # Model
@@ -46,7 +38,7 @@ def train(dataset_train, dataset_test):
     D_A = NLayerDiscriminator()
     D_B = NLayerDiscriminator()
 
-    if args.gpu >= 0:
+    if gpu >= 0:
         G_A.to_gpu()
         G_B.to_gpu()
         D_A.to_gpu()
@@ -71,9 +63,9 @@ def train(dataset_train, dataset_test):
     # Dataset
 
     iter_train = chainer.iterators.SerialIterator(
-        dataset_train, batch_size=args.batch_size)
+        dataset_train, batch_size=batch_size)
     iter_test = chainer.iterators.SerialIterator(
-        dataset_test, batch_size=args.batch_size, repeat=False, shuffle=False)
+        dataset_test, batch_size=batch_size, repeat=False, shuffle=False)
 
     # Updater
 
@@ -89,7 +81,7 @@ def train(dataset_train, dataset_test):
             D_A=optimizer_D_A,
             D_B=optimizer_D_B,
         ),
-        device=args.gpu,
+        device=gpu,
     )
 
     # Trainer
@@ -112,25 +104,25 @@ def train(dataset_train, dataset_test):
         trigger=(1, 'epoch'))
 
     trainer.extend(
-        extensions.LogReport(trigger=(20 // args.batch_size, 'iteration')))
+        extensions.LogReport(trigger=(20 // batch_size, 'iteration')))
 
     assert extensions.PlotReport.available()
     trainer.extend(extensions.PlotReport(
         y_keys=['loss_gen_A', 'loss_gen_B'],
         x_key='iteration', file_name='loss_gen.png',
-        trigger=(100 // args.batch_size, 'iteration')))
+        trigger=(100 // batch_size, 'iteration')))
     trainer.extend(extensions.PlotReport(
         y_keys=['loss_dis_A', 'loss_dis_B'],
         x_key='iteration', file_name='loss_dis.png',
-        trigger=(100 // args.batch_size, 'iteration')))
+        trigger=(100 // batch_size, 'iteration')))
     trainer.extend(extensions.PlotReport(
         y_keys=['loss_cyc_A', 'loss_cyc_B'],
         x_key='iteration', file_name='loss_cyc.png',
-        trigger=(100 // args.batch_size, 'iteration')))
+        trigger=(100 // batch_size, 'iteration')))
     trainer.extend(extensions.PlotReport(
         y_keys=['loss_idt_A', 'loss_idt_B'],
         x_key='iteration', file_name='loss_idt.png',
-        trigger=(100 // args.batch_size, 'iteration')))
+        trigger=(100 // batch_size, 'iteration')))
 
     trainer.extend(extensions.PrintReport([
         'epoch', 'iteration', 'elapsed_time',
@@ -141,9 +133,9 @@ def train(dataset_train, dataset_test):
     ]))
 
     trainer.extend(
-        extensions.ProgressBar(update_interval=20 // args.batch_size))
+        extensions.ProgressBar(update_interval=20 // batch_size))
 
-    trainer.extend(CycleGANEvaluator(iter_test, device=args.gpu))
+    trainer.extend(CycleGANEvaluator(iter_test, device=gpu))
 
     @training.make_extension(trigger=(1, 'epoch'))
     def tune_learning_rate(trainer):
@@ -163,8 +155,16 @@ def train(dataset_train, dataset_test):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-g', '--gpu', type=int, required=True,
+                        help='GPU id.')
+    parser.add_argument('-b', '--batch_size', type=int, default=1,
+                        help='Batch size.')
+    args = parser.parse_args()
+
     dataset_train = TransformDataset(
         Horse2ZebraDataset('train'), CycleGANTransform())
     dataset_test = TransformDataset(
         Horse2ZebraDataset('test'), CycleGANTransform())
-    train(dataset_train, dataset_test)
+    train(dataset_train, dataset_test, args.gpu, args.batch_size)

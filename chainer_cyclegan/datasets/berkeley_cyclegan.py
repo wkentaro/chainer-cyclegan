@@ -11,6 +11,21 @@ ROOT_DIR = chainer.dataset.get_dataset_directory('wkentaro/chainer-cyclegan')
 
 class BerkeleyCycleGANDataset(UnpairedDatasetBase):
 
+    available_datasets = (
+        'apple2orange',
+        'summer2winter_yosemite',
+        'horse2zebra',
+        'monet2photo',
+        'cezanne2photo',
+        'ukiyoe2photo',
+        'vangogh2photo',
+        'maps',
+        'cityscapes',
+        'facades',
+        'iphone2dslr_flower',
+        'ae_photos',
+    )
+
     def __init__(self, name, split):
         if name not in self.available_datasets:
             raise ValueError('Unavailable dataset: {:s}'.format(name))
@@ -25,23 +40,6 @@ class BerkeleyCycleGANDataset(UnpairedDatasetBase):
         url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/{:s}.zip'.format(name)  # NOQA
         cache_path = chainercv.utils.download.cached_download(url)
         chainercv.utils.download.extractall(cache_path, ROOT_DIR, ext='.zip')
-
-    @property
-    def available_datasets(self):
-        return (
-            'apple2orange',
-            'summer2winter_yosemite',
-            'horse2zebra',
-            'monet2photo',
-            'cezanne2photo',
-            'ukiyoe2photo',
-            'vangogh2photo',
-            'maps',
-            'cityscapes',
-            'facades',
-            'iphone2dslr_flower',
-            'ae_photos',
-        )
 
 
 class Horse2ZebraDataset(BerkeleyCycleGANDataset):
