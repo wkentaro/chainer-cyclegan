@@ -9,23 +9,23 @@ from .base import UnpairedDatasetBase
 ROOT_DIR = chainer.dataset.get_dataset_directory('wkentaro/chainer-cyclegan')
 
 
-class Horse2ZebraDataset(UnpairedDatasetBase):
+class Monet2PhotoDataset(UnpairedDatasetBase):
 
     def __init__(self, split):
-        img_dir = osp.join(ROOT_DIR, 'horse2zebra')
+        img_dir = osp.join(ROOT_DIR, 'monet2photo')
         if not osp.exists(img_dir):
             self.download()
-        super(Horse2ZebraDataset, self).__init__(img_dir, split)
+        super(Monet2PhotoDataset, self).__init__(img_dir, split)
 
     def download(self):
-        url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip'  # NOQA
+        url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/monet2photo.zip'  # NOQA
         cache_path = chainercv.utils.download.cached_download(url)
         chainercv.utils.download.extractall(cache_path, ROOT_DIR, ext='.zip')
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    dataset = Horse2ZebraDataset(split='train')
+    dataset = Monet2PhotoDataset(split='train')
     for i in range(len(dataset)):
         img_A, img_B = dataset[i]
         plt.subplot(121)
