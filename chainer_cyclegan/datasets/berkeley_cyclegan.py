@@ -23,7 +23,6 @@ class BerkeleyCycleGANDataset(UnpairedDatasetBase):
         'cityscapes',
         'facades',
         'iphone2dslr_flower',
-        'ae_photos',
     )
 
     def __init__(self, name, split):
