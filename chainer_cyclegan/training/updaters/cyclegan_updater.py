@@ -153,4 +153,4 @@ class CycleGANUpdater(training.StandardUpdater):
             'loss_cyc_B': loss_cycle_B,
             'loss_idt_A': loss_idt_A,
             'loss_idt_B': loss_idt_B,
-        }, G_A)
+        })
