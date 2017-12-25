@@ -29,15 +29,16 @@ class BerkeleyCycleGANDataset(UnpairedDatasetBase):
     def __init__(self, name, split):
         if name not in self.available_datasets:
             raise ValueError('Unavailable dataset: {:s}'.format(name))
+        self._name = name
 
-        img_dir = osp.join(ROOT_DIR, name)
+        img_dir = osp.join(ROOT_DIR, self._name)
         if not osp.exists(img_dir):
             self.download()
 
         super(BerkeleyCycleGANDataset, self).__init__(img_dir, split)
 
     def download(self):
-        url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/{:s}.zip'.format(name)  # NOQA
+        url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/{:s}.zip'.format(self._name)  # NOQA
         cache_path = chainercv.utils.download.cached_download(url)
         chainercv.utils.download.extractall(cache_path, ROOT_DIR, ext='.zip')
 
