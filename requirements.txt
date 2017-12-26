@@ -1,6 +1,5 @@
 chainer
 chainercv
 fcn
-pandas
 scikit-image
 scikit-learn
