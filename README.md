@@ -1,3 +1,5 @@
+<img src="examples/horse2zebra/.readme/horse2zebra.gif" align="right" width="384" />
+
 # chainer-cyclegan
 
 Chainer implementation of [Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Network](https://arxiv.org/abs/1703.10593).  

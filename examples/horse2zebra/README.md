@@ -1,5 +1,6 @@
-# Horse2Zebra
+<img src=".readme/horse2zebra.gif" align="right" width="384" />
 
+# horse2zebra
 
 ## Training
 
