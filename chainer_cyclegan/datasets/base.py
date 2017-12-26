@@ -20,6 +20,7 @@ class UnpairedDatasetBase(object):
 
     def __init__(self, root_dir, split):
         assert split in ['train', 'test']
+        self._split = split
 
         paths = collections.defaultdict(list)
         for domain in 'AB':
@@ -35,6 +36,9 @@ class UnpairedDatasetBase(object):
 
     def __getitem__(self, index):
         index_A = index % self._size['A']
+
+        if self._split == 'test':
+            np.random.seed(index)
         index_B = np.random.randint(0, self._size['B'])
 
         path_A = self._paths['A'][index_A]
