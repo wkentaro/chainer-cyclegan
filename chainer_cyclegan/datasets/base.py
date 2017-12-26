@@ -18,17 +18,10 @@ def _imread_as_rgb(filename):
 
 class UnpairedDatasetBase(object):
 
-    def __init__(self, root_dir, split):
+    def __init__(self, split, paths):
         assert split in ['train', 'test']
         self._split = split
-
-        paths = collections.defaultdict(list)
-        for domain in 'AB':
-            domain_dir = osp.join(root_dir, '%s%s' % (split, domain))
-            for img_file in glob.glob(osp.join(domain_dir, '*')):
-                img_file = osp.join(domain_dir, img_file)
-                paths[domain].append(img_file)
-        self._paths = dict(paths)
+        self._paths = paths
         self._size = {k: len(v) for k, v in self._paths.items()}
 
     def __len__(self):
@@ -50,9 +43,24 @@ class UnpairedDatasetBase(object):
         return img_A, img_B
 
 
+class UnpairedDirectoryDataset(UnpairedDatasetBase):
+
+    def __init__(self, root_dir, split):
+        paths = collections.defaultdict(list)
+        for domain in 'AB':
+            domain_dir = osp.join(root_dir, '%s%s' % (split, domain))
+            for img_file in glob.glob(osp.join(domain_dir, '*')):
+                img_file = osp.join(domain_dir, img_file)
+                paths[domain].append(img_file)
+        paths = dict(paths)
+
+        super(UnpairedDirectoryDataset, self).__init__(
+            split=split, paths=paths)
+
+
 class CycleGANTransform(object):
 
-    def __init__(self, train=True, load_size=(286, 286), fine_size=(256, 256))
+    def __init__(self, train=True, load_size=(286, 286), fine_size=(256, 256)):
         self._train = train
         self._load_size = load_size
         self._fine_size = fine_size

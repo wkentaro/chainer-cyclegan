@@ -28,9 +28,6 @@ def mkdir_p(*path):
 class Male2FemaleDataset(UnpairedDatasetBase):
 
     def __init__(self, split):
-        assert split in ['train', 'test']
-        self._split = split
-
         img_dir = osp.join(ROOT_DIR, 'Img/img_align_celeba')
         anno_file = osp.join(ROOT_DIR, 'Anno/list_attr_celeba.txt')
         if not osp.exists(img_dir) or not osp.exists(anno_file):
@@ -56,8 +53,9 @@ class Male2FemaleDataset(UnpairedDatasetBase):
             paths['A'], test_size=0.25, random_state=random_state)
         paths_B['train'], paths_B['test'] = train_test_split(
             paths['B'], test_size=0.25, random_state=random_state)
-        self._paths = {'A': paths_A[split], 'B': paths_B[split]}
-        self._size = {k: len(v) for k, v in self._paths.items()}
+        paths = {'A': paths_A[split], 'B': paths_B[split]}
+
+        super(Male2FemaleDataset, self).__init__(split=split, paths=paths)
 
     @staticmethod
     def download():

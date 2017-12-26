@@ -3,13 +3,13 @@ import os.path as osp
 import chainer
 import chainercv
 
-from .base import UnpairedDatasetBase
+from .base import UnpairedDirectoryDataset
 
 
 ROOT_DIR = chainer.dataset.get_dataset_directory('wkentaro/chainer-cyclegan')
 
 
-class BerkeleyCycleGANDataset(UnpairedDatasetBase):
+class BerkeleyCycleGANDataset(UnpairedDirectoryDataset):
 
     available_datasets = (
         'apple2orange',
