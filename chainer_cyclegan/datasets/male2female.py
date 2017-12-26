@@ -29,6 +29,7 @@ class Male2FemaleDataset(UnpairedDatasetBase):
 
     def __init__(self, split):
         assert split in ['train', 'test']
+        self._split = split
 
         img_dir = osp.join(ROOT_DIR, 'Img/img_align_celeba')
         anno_file = osp.join(ROOT_DIR, 'Anno/list_attr_celeba.txt')
