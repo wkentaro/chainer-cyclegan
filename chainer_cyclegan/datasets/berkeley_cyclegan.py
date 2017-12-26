@@ -1,4 +1,5 @@
 import os.path as osp
+import subprocess
 
 import chainer
 import chainercv
@@ -39,7 +40,10 @@ class BerkeleyCycleGANDataset(UnpairedDirectoryDataset):
     def download(self):
         url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/{:s}.zip'.format(self._name)  # NOQA
         cache_path = chainercv.utils.download.cached_download(url)
-        chainercv.utils.download.extractall(cache_path, ROOT_DIR, ext='.zip')
+        # FIXME: *** Error in `python': munmap_chunk(): invalid pointer: 0x00007f315ba20990 ***  # NOQA
+        # chainercv.utils.download.extractall(cache_path, ROOT_DIR, ext='.zip')
+        subprocess.check_output(
+            'unzip %s' % cache_path, cwd=ROOT_DIR, shell=True)
 
 
 class Horse2ZebraDataset(BerkeleyCycleGANDataset):
