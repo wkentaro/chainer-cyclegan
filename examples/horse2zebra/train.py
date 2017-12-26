@@ -87,7 +87,7 @@ def train(dataset_train, dataset_test, gpu, batch_size, suffix=''):
     # Trainer
 
     out = osp.join('logs', datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
-    out = out + '_' + suffix
+    out += suffix
     trainer = training.Trainer(
         updater, (niter + niter_decay, 'epoch'), out=out)
 

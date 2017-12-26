@@ -36,7 +36,7 @@ def main():
         BerkeleyCycleGANDataset(args.dataset, 'test'), CycleGANTransform())
 
     train(dataset_train, dataset_test, args.gpu, args.batch_size,
-          suffix=args.dataset)
+          suffix='_' + args.dataset)
 
 
 if __name__ == '__main__':
