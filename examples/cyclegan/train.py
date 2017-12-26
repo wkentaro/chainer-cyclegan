@@ -35,7 +35,8 @@ def main():
     dataset_test = chainer.datasets.TransformDataset(
         BerkeleyCycleGANDataset(args.dataset, 'test'), CycleGANTransform())
 
-    train(dataset_train, dataset_test, args.gpu, args.batch_size)
+    train(dataset_train, dataset_test, args.gpu, args.batch_size,
+          suffix=args.dataset)
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ from chainer_cyclegan.training.extensions import CycleGANEvaluator
 from chainer_cyclegan.training.updaters import CycleGANUpdater
 
 
-def train(dataset_train, dataset_test, gpu, batch_size):
+def train(dataset_train, dataset_test, gpu, batch_size, suffix=''):
     np.random.seed(0)
     if gpu >= 0:
         chainer.cuda.get_device_from_id(gpu).use()
@@ -87,6 +87,7 @@ def train(dataset_train, dataset_test, gpu, batch_size):
     # Trainer
 
     out = osp.join('logs', datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
+    out += suffix
     trainer = training.Trainer(
         updater, (niter + niter_decay, 'epoch'), out=out)
 
