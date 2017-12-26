@@ -167,5 +167,5 @@ if __name__ == '__main__':
     dataset_train = TransformDataset(
         Horse2ZebraDataset('train'), CycleGANTransform())
     dataset_test = TransformDataset(
-        Horse2ZebraDataset('test'), CycleGANTransform())
+        Horse2ZebraDataset('test'), CycleGANTransform(train=False))
     train(dataset_train, dataset_test, args.gpu, args.batch_size)

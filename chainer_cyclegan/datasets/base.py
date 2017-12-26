@@ -52,7 +52,8 @@ class UnpairedDatasetBase(object):
 
 class CycleGANTransform(object):
 
-    def __init__(self, load_size=(286, 286), fine_size=(256, 256)):
+    def __init__(self, train=True, load_size=(286, 286), fine_size=(256, 256))
+        self._train = train
         self._load_size = load_size
         self._fine_size = fine_size
 
@@ -63,9 +64,10 @@ class CycleGANTransform(object):
             img = chainercv.transforms.resize(
                 img, size=self._load_size,
                 interpolation=PIL.Image.BICUBIC)
-            img = chainercv.transforms.random_crop(
-                img, size=self._fine_size)
-            img = chainercv.transforms.random_flip(img, x_random=True)
+            if self._train:
+                img = chainercv.transforms.random_crop(
+                    img, size=self._fine_size)
+                img = chainercv.transforms.random_flip(img, x_random=True)
             img = img.astype(np.float32) / 255  # ToTensor
             img = (img - 0.5) / 0.5  # Normalize
             out_data.append(img)
