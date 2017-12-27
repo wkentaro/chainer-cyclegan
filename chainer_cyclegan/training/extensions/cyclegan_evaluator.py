@@ -67,10 +67,10 @@ class CycleGANEvaluator(training.Extension):
 
             batch_size = len(real_A)
             for i in range(batch_size):
-                viz = np.vstack([
+                viz = fcn.utils.get_tile_image([
                     np.hstack([real_A[i], fake_B[i], rec_A[i], idt_A[i]]),
                     np.hstack([real_B[i], fake_A[i], rec_B[i], idt_B[i]]),
-                ])
+                ], tile_shape=(2, 1))
                 vizs.append(viz)
                 if len(vizs) >= (self._shape[0] * self._shape[1]):
                     break
