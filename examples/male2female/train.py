@@ -49,7 +49,8 @@ if __name__ == '__main__':
     )
     dataset_test = chainer.datasets.TransformDataset(
         Male2FemaleDataset('test'),
-        CycleGANTransform(load_size=(314, 256), fine_size=(256, 256)),
+        CycleGANTransform(
+            train=False, load_size=(314, 256), fine_size=(256, 256)),
     )
 
     train(dataset_train, dataset_test, args.gpu, args.batch_size)
