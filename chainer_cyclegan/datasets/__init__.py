@@ -5,4 +5,6 @@ from .base import transform
 from .berkeley_cyclegan import BerkeleyCycleGANDataset
 from .berkeley_cyclegan import Horse2ZebraDataset
 
+from .berkeley_pix2pix import BerkeleyPix2PixDataset
+
 from .male2female import Male2FemaleDataset
