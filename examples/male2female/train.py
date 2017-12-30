@@ -8,7 +8,7 @@ import sys
 os.environ['MPLBACKEND'] = 'Agg'
 
 import chainer
-import numpy as np
+# import numpy as np
 
 from chainer_cyclegan.datasets import CycleGANTransform
 from chainer_cyclegan.datasets import Male2FemaleDataset
