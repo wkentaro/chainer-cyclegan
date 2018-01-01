@@ -28,46 +28,44 @@ cd examples/cyclegan
 
 ### apple2orange
 
-![](examples/cyclegan/.readme/apple2orange_epoch112.jpg)
+![](.readme/apple2orange_epoch200.jpg)
 
 ### summer2winter_yosemite
 
-![](examples/cyclegan/.readme/summer2winter_yosemite_epoch94.jpg)
+![](.readme/summer2winter_yosemite_epoch94.jpg)
 
 ### horse2zebra
 
-![](examples/cyclegan/.readme/horse2zebra_epoch77.jpg)
+![](.readme/horse2zebra_epoch200.jpg)
 
 ### monet2photo
 
-![](examples/cyclegan/.readme/monet2photo_epoch8.jpg)
+![](.readme/monet2photo_epoch50.jpg)
 
 ### cezanne2photo
 
-![](examples/cyclegan/.readme/cezanne2photo_epoch18.jpg)
+![](.readme/cezanne2photo_epoch22.jpg)
 
-<!--
 ### ukiyoe2photo
 
-![](examples/cyclegan/.readme/ukiyoe2photo.jpg)
--->
+![](.readme/ukiyoe2photo_epoch108.jpg)
 
 ### vangogh2photo
 
-![](examples/cyclegan/.readme/vangogh2photo_epoch17.jpg)
+![](.readme/vangogh2photo_epoch63.jpg)
 
 ### maps
 
-![](examples/cyclegan/.readme/maps_epoch42.jpg)
+![](.readme/maps_epoch200.jpg)
 
 ### cityscapes
 
-![](examples/cyclegan/.readme/cityscapes_epoch17.jpg)
+![](.readme/cityscapes_epoch17.jpg)
 
 ### facades
 
-![](examples/cyclegan/.readme/facades_epoch8.jpg)
+![](.readme/facades_epoch200.jpg)
 
 ### iphone2dslr_flower
 
-![](examples/cyclegan/.readme/iphone2dslr_flower_epoch32.jpg)
+![](.readme/iphone2dslr_flower_epoch200.jpg)
