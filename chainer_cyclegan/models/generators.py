@@ -16,15 +16,13 @@ class ResnetBlock(chainer.Chain):
                                       mode='constant')  # mode='reflect')
             self.l1 = L.Convolution2D(256, 256, ksize=3, stride=1,
                                       initialW=initialW)
-            self.l2 = InstanceNormalization(256, decay=0.9, eps=1e-05,
-                                            use_gamma=False, use_beta=False)
+            self.l2 = InstanceNormalization(256, decay=0.9, eps=1e-05)
             self.l3 = lambda x: F.relu(x)
             self.l4 = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 1), (1, 1)],
                                       mode='constant')  # mode='reflect')
             self.l5 = L.Convolution2D(256, 256, ksize=3, stride=1,
                                       initialW=initialW)
-            self.l6 = InstanceNormalization(256, decay=0.9, eps=1e-05,
-                                            use_gamma=False, use_beta=False)
+            self.l6 = InstanceNormalization(256, decay=0.9, eps=1e-05)
 
         self.functions = []
         for i in range(0, 7):
@@ -33,11 +31,7 @@ class ResnetBlock(chainer.Chain):
     def __call__(self, x):
         h = x
         for i, func in enumerate(self.functions):
-            if isinstance(func, InstanceNormalization):
-                with chainer.using_config('train', True):
-                    h = func(h)
-            else:
-                h = func(h)
+            h = func(h)
         h = x + h
         return h
 
@@ -57,18 +51,15 @@ class ResnetGenerator(chainer.Chain):
             # * decay=0.9 <-> momentum=0.1
             #   (FIXME: https://github.com/keras-team/keras/issues/6839)
             # * use_gamma=False, use_beta=False <-> affine=False
-            self.l2 = InstanceNormalization(64, decay=0.9, eps=1e-05,
-                                            use_gamma=False, use_beta=False)
+            self.l2 = InstanceNormalization(64, decay=0.9, eps=1e-05)
             self.l3 = lambda x: F.relu(x)
             self.l4 = L.Convolution2D(64, 128, ksize=3, stride=2, pad=1,
                                       initialW=initialW)
-            self.l5 = InstanceNormalization(128, decay=0.9, eps=1e-05,
-                                            use_gamma=False, use_beta=False)
+            self.l5 = InstanceNormalization(128, decay=0.9, eps=1e-05)
             self.l6 = lambda x: F.relu(x)
             self.l7 = L.Convolution2D(128, 256, ksize=3, stride=2, pad=1,
                                       initialW=initialW)
-            self.l8 = InstanceNormalization(256, decay=0.9, eps=1e-05,
-                                            use_gamma=False, use_beta=False)
+            self.l8 = InstanceNormalization(256, decay=0.9, eps=1e-05)
             self.l9 = lambda x: F.relu(x)
             self.l10 = ResnetBlock()
             self.l11 = ResnetBlock()
@@ -81,13 +72,11 @@ class ResnetGenerator(chainer.Chain):
             self.l18 = ResnetBlock()
             self.l19 = L.Deconvolution2D(256, 128, ksize=3, stride=2, pad=1,
                                          initialW=initialW)
-            self.l20 = InstanceNormalization(128, decay=0.9, eps=1e-05,
-                                             use_gamma=False, use_beta=False)
+            self.l20 = InstanceNormalization(128, decay=0.9, eps=1e-05)
             self.l21 = lambda x: F.relu(x)
             self.l22 = L.Deconvolution2D(128, 64, ksize=3, stride=2, pad=1,
                                          initialW=initialW)
-            self.l23 = InstanceNormalization(64, decay=0.9, eps=1e-05,
-                                             use_gamma=False, use_beta=False)
+            self.l23 = InstanceNormalization(64, decay=0.9, eps=1e-05)
             self.l24 = lambda x: F.relu(x)
             self.l25 = lambda x: F.pad(x, [(0, 0), (0, 0), (3, 3), (3, 3)],
                                        mode='constant')  # mode='reflect')
@@ -102,10 +91,7 @@ class ResnetGenerator(chainer.Chain):
     def __call__(self, x):
         h = x
         for i, func in enumerate(self.functions):
-            if isinstance(func, InstanceNormalization):
-                with chainer.using_config('train', True):
-                    h = func(h)
-            elif isinstance(func, L.Deconvolution2D):
+            if isinstance(func, L.Deconvolution2D):
                 # 1 padding to the output
                 outsize_h = chainer.utils.conv.get_deconv_outsize(
                     size=h.shape[2], k=func.ksize, s=func.stride[0],

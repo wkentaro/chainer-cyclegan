@@ -28,8 +28,7 @@ class NLayerDiscriminator(chainer.Chain):
                 functions += [
                     L.Convolution2D(ndf * nf_mult_prev, ndf * nf_mult,
                                     ksize=4, stride=1, pad=1),
-                    InstanceNormalization(ndf * nf_mult,
-                                          use_gamma=False, use_beta=False),
+                    InstanceNormalization(ndf * nf_mult, decay=0.9, eps=1e-5),
                     lambda x: F.leaky_relu(x, 0.2),
                 ]
 
@@ -38,8 +37,7 @@ class NLayerDiscriminator(chainer.Chain):
             functions += [
                 L.Convolution2D(ndf * nf_mult_prev, ndf * nf_mult,
                                 ksize=4, stride=1, pad=1),
-                InstanceNormalization(ndf * nf_mult, decay=0.9, eps=1e-5,
-                                      use_gamma=False, use_beta=False),
+                InstanceNormalization(ndf * nf_mult, decay=0.9, eps=1e-5),
                 lambda x: F.leaky_relu(x, 0.2),
             ]
 
