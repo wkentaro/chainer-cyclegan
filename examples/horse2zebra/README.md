@@ -1,4 +1,4 @@
-<img src=".readme/horse2zebra.gif" align="right" width="384" />
+<img src="https://drive.google.com/uc?id=1Wa_O-8Cabvj8Dp7xT3J8KnhyfvzMF55s" align="right" width="384" />
 
 # horse2zebra
 
