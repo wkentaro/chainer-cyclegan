@@ -20,6 +20,13 @@ if sys.argv[-1] == 'release':
     sys.exit(0)
 
 
+try:
+    import cv2
+except ImportError:
+    print('Please install OpenCV.')
+    quit(1)
+
+
 install_requires = parse_requirements('requirements.txt', session=False)
 
 setup(
