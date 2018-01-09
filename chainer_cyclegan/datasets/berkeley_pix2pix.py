@@ -28,7 +28,7 @@ class BerkeleyPix2PixDataset(PairedDirectoryDataset):
     def download(self):
         url = 'https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/{:s}.tar.gz'.format(self._name)  # NOQA
         cache_path = chainer.dataset.cached_download(url)
-        chainercv.utils.extractall(cache_path, ROOT_DIR, ext='.tar.gz')
+        chainercv.utils.extractall(cache_path, ROOT_DIR, ext='.tgz')
 
 
 if __name__ == '__main__':
