@@ -16,6 +16,12 @@ conda install -c menpo -y opencv
 pip install .
 ```
 
+or
+
+```bash
+pip install chainer-cyclegan
+```
+
 
 ## Training
 
