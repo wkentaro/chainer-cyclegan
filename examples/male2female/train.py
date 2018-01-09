@@ -11,7 +11,7 @@ import chainer
 # import numpy as np
 
 from chainer_cyclegan.datasets import CycleGANTransform
-from chainer_cyclegan.datasets import Male2FemaleDataset
+from chainer_cyclegan.datasets import CelebAStyle2StyleDataset
 
 here = osp.dirname(osp.abspath(__file__))
 sys.path.insert(0, osp.join(here, '../horse2zebra'))
@@ -44,11 +44,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     dataset_train = chainer.datasets.TransformDataset(
-        Male2FemaleDataset('train'),
+        CelebAStyle2StyleDataset('train', style_A='Male'),
         CycleGANTransform(load_size=(314, 256), fine_size=(256, 256)),
     )
     dataset_test = chainer.datasets.TransformDataset(
-        Male2FemaleDataset('test'),
+        CelebAStyle2StyleDataset('test', style_A='Male'),
         CycleGANTransform(
             train=False, load_size=(314, 256), fine_size=(256, 256)),
     )

@@ -5,7 +5,7 @@ import argparse
 import cv2
 import fcn
 
-from chainer_cyclegan.datasets import Male2FemaleDataset
+from chainer_cyclegan.datasets import CelebAStyle2StyleDataset
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
         print('{}: {}'.format(key, value))
     print('')
 
-    dataset = Male2FemaleDataset(args.split)
+    dataset = CelebAStyle2StyleDataset(args.split, style_A='Male')
 
     index = 0
     while True:
