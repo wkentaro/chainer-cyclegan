@@ -5,6 +5,7 @@ import os.path as osp
 
 import chainer
 from chainer import cuda
+import cv2
 import numpy as np
 try:
     import imageio
@@ -55,6 +56,9 @@ def main():
     video = imageio.get_reader(args.video_file)
     writer = imageio.get_writer(args.out_file)
     for img in tqdm.tqdm(video):
+        img_org = img.copy()
+        img = cv2.resize(img, (256, 256))
+
         xi = img.astype(np.float32)
         xi = (xi / 255) * 2 - 1
         xi = xi.transpose(2, 0, 1)
@@ -69,8 +73,9 @@ def main():
         yi = yi.transpose(1, 2, 0)
         yi = (yi + 1) / 2 * 255
         out = yi.astype(np.uint8)
+        out = cv2.resize(out, (img_org.shape[1], img_org.shape[0]))
 
-        writer.append_data(np.hstack([img, out]))
+        writer.append_data(np.hstack([img_org, out]))
 
     print('Wrote video: {:s}'.format(args.out_file))
 

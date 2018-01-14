@@ -5,6 +5,7 @@ import os.path as osp
 
 import chainer
 from chainer import cuda
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import skimage.io
@@ -46,6 +47,9 @@ def main():
 
     batch_size = 1
 
+    img_org = img.copy()
+    img = cv2.resize(img, (256, 256))
+
     xi = img.astype(np.float32)
     xi = (xi / 255) * 2 - 1
     xi = xi.transpose(2, 0, 1)
@@ -60,10 +64,11 @@ def main():
     yi = yi.transpose(1, 2, 0)
     yi = (yi + 1) / 2 * 255
     out = yi.astype(np.uint8)
+    out = cv2.resize(out, (img_org.shape[1], img_org.shape[0]))
 
     plt.figure(figsize=(12, 6))
     plt.subplot(121)
-    plt.imshow(img)
+    plt.imshow(img_org)
     plt.title('Input (Chainer)')
     plt.subplot(122)
     plt.imshow(out)

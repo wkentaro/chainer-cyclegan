@@ -5,11 +5,12 @@ import os
 import os.path as osp
 import sys
 
-import matplotlib.pyplot as plt
+import cv2
+import imageio
 import numpy as np
-import skimage.io
 import torch
 from torch.autograd import Variable
+import tqdm
 
 here = osp.dirname(osp.realpath(__file__))
 pytorch_dir = osp.join(here, '../../src/pytorch-cyclegan')
@@ -20,15 +21,16 @@ from models import networks
 
 def main():
     default_model_file = osp.join(here, 'data/G_horse2zebra.pth')
-    default_img_file = 'https://images2.onionstatic.com/clickhole/3570/2/original/600.jpg'  # NOQA
+    default_out_file = osp.join(here, 'logs/create_horse2zebra_pytorch.gif')
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('video_file', help='Video file of horse.')
     parser.add_argument('-g', '--gpu', type=int, default=0, help='GPU id.')
     parser.add_argument('-m', '--model-file', default=default_model_file,
                         help='Model file.')
-    parser.add_argument('-i', '--img-file', default=default_img_file,
-                        help='Image file.')
+    parser.add_argument('-o', '--out-file', default=default_out_file,
+                        help='Output video file.')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -36,7 +38,8 @@ def main():
 
     print('GPU id: {:d}'.format(args.gpu))
     print('Model file: {:s}'.format(args.model_file))
-    print('Image file: {:s}'.format(args.img_file))
+    print('Video file: {:s}'.format(args.video_file))
+    print('Output file: {:s}'.format(args.out_file))
 
     model = networks.ResnetGenerator(
         input_nc=3,
@@ -53,39 +56,36 @@ def main():
         model = model.cuda()
     model = model.eval()
 
-    img = skimage.io.imread(args.img_file)
+    batch_size = 1
 
-    batch_size = 3
+    video = imageio.get_reader(args.video_file)
+    writer = imageio.get_writer(args.out_file)
+    for img in tqdm.tqdm(video):
+        img_org = img.copy()
+        img = cv2.resize(img, (256, 256))
 
-    img_org = img.copy()
-    img = cv2.resize(img, (256, 256))
+        xi = img.astype(np.float32)
+        xi = (xi / 255 * 2) - 1
+        xi = xi.transpose(2, 0, 1)
+        x = np.repeat(xi[None, :, :, :], batch_size, axis=0)
+        x = torch.from_numpy(x)
+        if torch.cuda.is_available():
+            x = x.cuda()
+        x = Variable(x, volatile=True)
 
-    xi = img.astype(np.float32)
-    xi = (xi / 255 * 2) - 1
-    xi = xi.transpose(2, 0, 1)
-    x = np.repeat(xi[None, :, :, :], batch_size, axis=0)
-    x = torch.from_numpy(x)
-    if torch.cuda.is_available():
-        x = x.cuda()
-    x = Variable(x, volatile=True)
+        y = model(x)
 
-    y = model(x)
+        yi = y[0].data
+        yi = (yi + 1) / 2 * 255
+        yi = yi.cpu().numpy()
+        yi = yi.transpose(1, 2, 0)
+        out = yi.astype(np.uint8)
 
-    yi = y[0].data
-    yi = (yi + 1) / 2 * 255
-    yi = yi.cpu().numpy()
-    yi = yi.transpose(1, 2, 0)
-    out = yi.astype(np.uint8)
-    out = cv2.resize(out, (img_org.shape[1], img_org.shape[0]))
+        out = cv2.resize(out, (img_org.shape[1], img_org.shape[0]))
 
-    plt.figure(figsize=(12, 6))
-    plt.subplot(121)
-    plt.imshow(img_org)
-    plt.title('Input (PyTorch)')
-    plt.subplot(122)
-    plt.imshow(out)
-    plt.title('Output (PyTorch)')
-    plt.show()
+        writer.append_data(np.hstack([img_org, out]))
+
+    print('Wrote video: {:s}'.format(args.out_file))
 
 
 if __name__ == '__main__':
