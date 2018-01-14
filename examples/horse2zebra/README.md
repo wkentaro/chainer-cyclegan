@@ -1,6 +1,13 @@
-<img src="https://drive.google.com/uc?id=1APsWYE6fx1a6PNrG1saiFuBHcuZOXZln" align="right" width="384" />
-
 # horse2zebra
+
+**Chainer**
+
+![](https://drive.google.com/uc?id=1APsWYE6fx1a6PNrG1saiFuBHcuZOXZln)
+
+**PyTorch**
+
+![](https://drive.google.com/uc?id=1A_XVVoH_R4_ASeAvFl6KWj8aKqgSgmR6)
+
 
 ## Training
 
