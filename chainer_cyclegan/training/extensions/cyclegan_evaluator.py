@@ -37,7 +37,8 @@ class CycleGANEvaluator(training.Extension):
             real_A = chainer.Variable(self.converter(batch_A, self.device))
             real_B = chainer.Variable(self.converter(batch_B, self.device))
 
-            with chainer.using_config('enable_backprop', False):
+            with chainer.using_config('enable_backprop', False), \
+                    chainer.using_config('train', False):
                 idt_B = G_A(real_B)
                 idt_A = G_B(real_A)
 
