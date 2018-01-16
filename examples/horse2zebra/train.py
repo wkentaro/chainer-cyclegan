@@ -21,8 +21,8 @@ from chainer_cyclegan.datasets import CycleGANTransform
 from chainer_cyclegan.datasets import Horse2ZebraDataset
 from chainer_cyclegan.models import NLayerDiscriminator
 from chainer_cyclegan.models import ResnetGenerator
-from chainer_cyclegan.training.extensions import CycleGANEvaluator
-from chainer_cyclegan.training.updaters import CycleGANUpdater
+from chainer_cyclegan.extensions import CycleGANEvaluator
+from chainer_cyclegan.updaters import CycleGANUpdater
 
 
 def train(dataset_train, dataset_test, gpu, batch_size, suffix=''):
