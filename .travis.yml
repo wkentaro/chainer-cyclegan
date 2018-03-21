@@ -1,0 +1,26 @@
+sudo: false
+
+os: linux
+
+python:
+  - "2.7"
+  - "3.5"
+
+language: python
+
+cache:
+  - pip
+
+install:
+  - pip install hacking
+  - pip install .
+
+script:
+  - flake8 .
+
+notifications:
+  email: false
+
+branches:
+  only:
+    - master
