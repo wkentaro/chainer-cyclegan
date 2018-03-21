@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import sys
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import skimage.io

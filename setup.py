@@ -21,7 +21,7 @@ if sys.argv[-1] == 'release':
 
 
 try:
-    import cv2
+    import cv2  # NOQA
 except ImportError:
     print('Please install OpenCV.')
     quit(1)

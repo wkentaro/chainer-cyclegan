@@ -19,9 +19,9 @@ import numpy as np
 
 from chainer_cyclegan.datasets import CycleGANTransform
 from chainer_cyclegan.datasets import Horse2ZebraDataset
+from chainer_cyclegan.extensions import CycleGANEvaluator
 from chainer_cyclegan.models import NLayerDiscriminator
 from chainer_cyclegan.models import ResnetGenerator
-from chainer_cyclegan.extensions import CycleGANEvaluator
 from chainer_cyclegan.updaters import CycleGANUpdater
 
 

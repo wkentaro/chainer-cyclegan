@@ -3,8 +3,8 @@ import os.path as osp
 import chainer
 import chainercv
 
-from .paired import PairedDirectoryDataset
 from .berkeley_cyclegan import ROOT_DIR
+from .paired import PairedDirectoryDataset
 
 
 class BerkeleyPix2PixDataset(PairedDirectoryDataset):
