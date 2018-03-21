@@ -2,6 +2,8 @@
 
 # chainer-cyclegan
 
+[![Build Status](https://travis-ci.org/wkentaro/chainer-cyclegan.svg?branch=master)](https://travis-ci.org/wkentaro/chainer-cyclegan)
+
 Chainer implementation of ["Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Network"](https://arxiv.org/abs/1703.10593).  
 This is a faithful re-implementation of [the official PyTorch implementation](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
 
