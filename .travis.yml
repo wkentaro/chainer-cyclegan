@@ -13,6 +13,7 @@ cache:
 
 install:
   - pip install hacking
+  - pip install opencv-python
   - pip install .
 
 script:
