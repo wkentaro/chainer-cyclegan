@@ -13,13 +13,13 @@ class ResnetBlock(chainer.Chain):
         initialW = chainer.initializers.Normal(scale=0.02)
         with self.init_scope():
             self.l0 = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 1), (1, 1)],
-                                      mode='constant')  # mode='reflect')
+                                      mode='reflect')
             self.l1 = L.Convolution2D(256, 256, ksize=3, stride=1,
                                       initialW=initialW)
             self.l2 = InstanceNormalization(256, decay=0.9, eps=1e-05)
             self.l3 = lambda x: F.relu(x)
             self.l4 = lambda x: F.pad(x, [(0, 0), (0, 0), (1, 1), (1, 1)],
-                                      mode='constant')  # mode='reflect')
+                                      mode='reflect')
             self.l5 = L.Convolution2D(256, 256, ksize=3, stride=1,
                                       initialW=initialW)
             self.l6 = InstanceNormalization(256, decay=0.9, eps=1e-05)
@@ -44,7 +44,7 @@ class ResnetGenerator(chainer.Chain):
         initialW = chainer.initializers.Normal(scale=0.02)
         with self.init_scope():
             self.l0 = lambda x: F.pad(x, [(0, 0), (0, 0), (3, 3), (3, 3)],
-                                      mode='constant')  # mode='reflect')
+                                      mode='reflect')
             self.l1 = L.Convolution2D(3, 64, ksize=7, stride=1,
                                       initialW=initialW)
             # Chainer <-> PyTorch
@@ -79,7 +79,7 @@ class ResnetGenerator(chainer.Chain):
             self.l23 = InstanceNormalization(64, decay=0.9, eps=1e-05)
             self.l24 = lambda x: F.relu(x)
             self.l25 = lambda x: F.pad(x, [(0, 0), (0, 0), (3, 3), (3, 3)],
-                                       mode='constant')  # mode='reflect')
+                                       mode='reflect')
             self.l26 = L.Convolution2D(64, 3, ksize=7, stride=1,
                                        initialW=initialW)
             self.l27 = lambda x: F.tanh(x)
