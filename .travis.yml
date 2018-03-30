@@ -14,6 +14,9 @@ cache:
 install:
   - pip install hacking
   - pip install opencv-python
+  # disable cupy in travis
+  - cat requirements.txt | grep -v 'egg=cupy' > requirements.txt_
+  - mv requirements.txt_ requirements.txt
   - pip install .
 
 script:
