@@ -6,7 +6,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '1.2.0'
+version = '1.2.1'
 
 
 if sys.argv[-1] == 'release':
@@ -30,7 +30,7 @@ except ImportError:
 install_requires = parse_requirements('requirements.txt', session=False)
 
 setup(
-    name='chainer_cyclegan',
+    name='chainer-cyclegan',
     version=version,
     packages=find_packages(),
     install_requires=[str(ir.req) for ir in install_requires],
