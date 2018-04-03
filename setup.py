@@ -31,6 +31,7 @@ install_requires = parse_requirements('requirements.txt', session=False)
 
 setup(
     name='chainer-cyclegan',
+    description='Chainer Implementation of CycleGAN.',
     version=version,
     packages=find_packages(),
     install_requires=[str(ir.req) for ir in install_requires],
