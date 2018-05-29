@@ -1,6 +1,6 @@
 chainer
+cupy>=5.0.0a1
 chainercv
--e git://github.com/cupy/cupy.git@4248d483302536abebc45cfef03519f2b7601578#egg=cupy
 fcn
 scikit-image
 scikit-learn

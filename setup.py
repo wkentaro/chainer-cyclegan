@@ -1,12 +1,11 @@
 import subprocess
 import sys
 
-from pip.req import parse_requirements
 from setuptools import find_packages
 from setuptools import setup
 
 
-version = '1.2.3'
+version = '1.2.4'
 
 
 if sys.argv[-1] == 'release':
@@ -27,14 +26,16 @@ except ImportError:
     quit(1)
 
 
-install_requires = parse_requirements('requirements.txt', session=False)
+with open('requirements.txt') as f:
+    install_requires = f.readlines()
+
 
 setup(
     name='chainer-cyclegan',
     description='Chainer Implementation of CycleGAN.',
     version=version,
     packages=find_packages(),
-    install_requires=[str(ir.req) for ir in install_requires],
+    install_requires=install_requires,
     author='Kentaro Wada',
     author_email='www.kentaro.wada@gmail.com',
     url='https://github.com/wkentaro/chainer-cyclegan',
