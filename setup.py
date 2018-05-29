@@ -5,7 +5,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '1.2.4'
+version = '1.2.5'
 
 
 if sys.argv[-1] == 'release':
@@ -26,8 +26,12 @@ except ImportError:
     quit(1)
 
 
+install_requires = []
 with open('requirements.txt') as f:
-    install_requires = f.readlines()
+    for req in f:
+        if req.startswith('-e'):
+            continue
+        install_requires.append(req.strip())
 
 
 setup(
