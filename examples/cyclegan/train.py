@@ -5,15 +5,15 @@ import os
 import os.path as osp
 import sys
 
-os.environ['MPLBACKEND'] = 'Agg'
+os.environ['MPLBACKEND'] = 'Agg'  # NOQA
 
 import chainer
 
 from chainer_cyclegan.datasets import BerkeleyCycleGANDataset
 from chainer_cyclegan.datasets import CycleGANTransform
 
-here = osp.dirname(osp.abspath(__file__))
-sys.path.insert(0, osp.join(here, '../horse2zebra'))
+here = osp.dirname(osp.abspath(__file__))  # NOQA
+sys.path.insert(0, osp.join(here, '../horse2zebra'))  # NOQA
 
 from train import train
 

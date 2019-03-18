@@ -12,10 +12,10 @@ import torch
 from torch.autograd import Variable
 import tqdm
 
-here = osp.dirname(osp.realpath(__file__))
-pytorch_dir = osp.join(here, '../../src/pytorch-cyclegan')
+here = osp.dirname(osp.realpath(__file__))  # NOQA
+pytorch_dir = osp.join(here, '../../src/pytorch-cyclegan')  # NOQA
 
-sys.path.insert(0, pytorch_dir)
+sys.path.insert(0, pytorch_dir)  # NOQA
 from models import networks
 
 

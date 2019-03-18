@@ -7,7 +7,7 @@ import datetime
 import os
 import os.path as osp
 
-os.environ['MPLBACKEND'] = 'Agg'
+os.environ['MPLBACKEND'] = 'Agg'  # NOQA
 
 import chainer
 from chainer.datasets import TransformDataset
